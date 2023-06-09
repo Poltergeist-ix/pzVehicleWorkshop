@@ -1,4 +1,4 @@
-require "pzVehicleWorkshop/VehicleSettings"
+require "!_pzVehicleWorkshop_Init"
 
 local ArmoredVanillaVehicles = {
     armorVehicles = {},
@@ -16,7 +16,7 @@ function ArmoredVanillaVehicles.addArmoredCar(armorTypes,vanillaTypes)
 end
 
 function ArmoredVanillaVehicles.generatePartParents(settings,vehicle)
-    local t = {}
+    settings.partParents = {}
     local partsFound = {}
     local partsPending = {}
     for i = 0, vehicle:getPartCount() - 1 do
@@ -25,21 +25,18 @@ function ArmoredVanillaVehicles.generatePartParents(settings,vehicle)
         local sub, n = partId:gsub("^Armor_","",1)
         if n == 1 then
             if partsFound[sub] then
-                t[sub] = partId
+                settings.partParents[sub] = partId
             else
                 partsPending[sub] = partId
             end
         elseif partsPending[partId] then
-            t[partId] = partsPending[partId]
+            settings.partParents[partId] = partsPending[partId]
             partsPending[partId] = nil
         end
         partsFound[partId] = true
     end
 
     if not table.isempty(partsPending) then print("pzVehicleWorkshop: unassigned armor parts") end
-    settings.partParents = t
-
-    return t
 end
 
 pzVehicleWorkshop.ArmoredVanillaVehicles = ArmoredVanillaVehicles

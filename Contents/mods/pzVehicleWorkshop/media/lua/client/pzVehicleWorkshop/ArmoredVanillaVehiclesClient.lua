@@ -22,7 +22,7 @@ local ArmoredVanillaVehicles = pzVehicleWorkshop.ArmoredVanillaVehicles or {}
 --end
 
 function ArmoredVanillaVehicles.openPanel(settings, window)
-    local def = settings.partParents or ArmoredVanillaVehicles.generatePartParents(settings,window.vehicle)
+    if not settings.partParents then ArmoredVanillaVehicles.generatePartParents(settings,window.vehicle) end
 
     local index = 0
     for i, item in ipairs(copyTable(window.bodyworklist.items)) do
@@ -34,9 +34,9 @@ function ArmoredVanillaVehicles.openPanel(settings, window)
         item.itemindex = index
         window.bodyworklist.items[index] = item
 
-        if def[partId] then
+        if settings.partParents[partId] then
             index = index + 1
-            local prPart = window.vehicle:getPartById(def[partId])
+            local prPart = window.vehicle:getPartById(settings.partParents[partId])
             local newPart = {
                 name = getText("IGUI_VehiclePart" .. prPart:getId()),
                 part = prPart
@@ -128,7 +128,7 @@ end
 
 function ArmoredVanillaVehicles.showVehicleTierLevel()
     if not self.vwBodyworklistElement then
-        local x,y,w,h = self.bodyworklist:getX(), self.bodyworklist:getY() - (self.vwBodyworklistOffset or 0), self.bodyworklist:getWidth(), UI.settings.fontMediumHeight
+        local x,y,w,h = self.bodyworklist:getX(), self.bodyworklist:getY() - (self.vwBodyworklistOffset or 0), self.bodyworklist:getWidth(), pzVehicleWorkshop.UI.settings.fontMediumHeight
         function returnFalse() return false end
 
         local panel = ISPanel:new(x,y,w,h)
@@ -151,7 +151,7 @@ function ArmoredVanillaVehicles.showVehicleTierLevel()
 
         panel:addChild(panel.image)
 
-        panel.label = ISLabel:new(20, 0, UI.settings.fontMediumHeight, getText("Tier %1 Vehicle",tostring(1)), self.partCatRGB.r, self.partCatRGB.g, self.partCatRGB.b, self.partCatRGB.a, UIFont.Medium, true)
+        panel.label = ISLabel:new(20, 0, pzVehicleWorkshop.UI.settings.fontMediumHeight, getText("Tier %1 Vehicle",tostring(1)), self.partCatRGB.r, self.partCatRGB.g, self.partCatRGB.b, self.partCatRGB.a, UIFont.Medium, true)
         panel.label.onRightMouseUp = returnFalse
         panel:addChild(panel.label)
     end
@@ -285,14 +285,14 @@ function ArmoredVanillaVehicles.addArmorOptions(settings, self, part, x, y)
 end
 
 do
-    local VehicleSettings = pzVehicleWorkshop.VehicleSettings
+    local add = pzVehicleWorkshop.VehicleSettings.add
 
     for mod, base in pairs(pzVehicleWorkshop.ArmoredVanillaVehicles.armorVehicles ) do
-        VehicleSettings.add{
+        add{
             id = mod,
-            VehicleMechanics_OnOpen = ArmoredVanillaVehicles.openPanel,
-            VehicleMechanics_DrawItems = ArmoredVanillaVehicles.drawArmorItems,
-            VehicleMechanics_PartContext = ArmoredVanillaVehicles.addArmorOptions,
+            OnVehicleMechanicsOpen = ArmoredVanillaVehicles.openPanel,
+            OnVehicleMechanicsDrawItems = ArmoredVanillaVehicles.drawArmorItems,
+            OnVehicleMechanicsPartContext = ArmoredVanillaVehicles.addArmorOptions,
         }
     end
 end

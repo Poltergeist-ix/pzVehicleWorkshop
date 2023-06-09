@@ -5,11 +5,9 @@ local Util = {
     Update = {},
 }
 
-local notClient = not isClient()
-
 function Util.changeVehicleScript(vehicle,scriptName,skinIndex)
     vehicle:setScriptName(scriptName)
-    if notClient and not isServer() then
+    if not isClient() and not isServer() then
         vehicle:scriptReloaded()
     end
     --if skinIndex then vehicle:setSkinIndex(skinIndex) end
@@ -17,6 +15,19 @@ end
 
 function Util.createEmpty(vehicle, part)
     part:setCondition(0)
+end
+
+function Util.DoorAnimOnServer(vehicle,part,player,open)
+    if not part or part:getDoor():isOpen() == open then return end
+
+    vehicle:playPartSound(part, player, open and "Open" or "Close")
+    if isServer() then
+        sendServerCommand("pzVehicleWorkshop","doorAnim",{ id = vehicle:getId(), partId = part:getId(), open = open })
+    else
+        vehicle:playPartAnim(part, open and "Open" or "Close")
+    end
+    part:getDoor():setOpen(open)
+    vehicle:transmitPartDoor(part)
 end
 
 function Util.initBaseArmor(vehicle, part)
@@ -129,4 +140,6 @@ function Util.OnCreate.RemoveArmorRecipe(items, result, player)
     end
 end
 
+-- TODO pick one
 pzVehicleWorkshop.VehicleUtilities = Util
+pzVehicleWorkshop.Util = Util

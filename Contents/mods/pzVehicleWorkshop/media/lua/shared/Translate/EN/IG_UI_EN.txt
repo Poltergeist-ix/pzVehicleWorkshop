@@ -1,0 +1,6 @@
+IGUI_EN = {
+    IGUI_pzVehicleWorkshop_AnimOpen_flipLamps = "Open Flip Lamps",
+    IGUI_pzVehicleWorkshop_AnimClose_flipLamps = "Close Flip Lamps",
+    IGUI_pzVehicleWorkshop_AnimOpen_convertible = "Open Roof",
+    IGUI_pzVehicleWorkshop_AnimClose_convertible = "Close Roof",
+}

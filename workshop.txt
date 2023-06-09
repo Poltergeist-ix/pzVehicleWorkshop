@@ -1,12 +1,17 @@
 version=1
 id=2964179034
 title=Vehicle Workshop
-description=List of Vehicle Mods that require this.
-description=
+description=[h3]
+description=This is a framework for easier management of vehicles.
+description=[/h3]
+description=[hr][/hr]
 description=[url=https://steamcommunity.com/sharedfiles/filedetails/?id=2964213735][img]https://steamuserimages-a.akamaihd.net/ugc/2026099010639229650/9D1581BB6FAD473FD83122B51B59DEF503046F01/[/img][/url]
-description=[code]
-description=Workshop ID: 2964179034
-description=Mod ID: pzVehicleWorkshop
-description=[/code]
+description=
+description=[code][table]
+description=[h3]Mod info[/h3]
+description=[tr][td]	Permissions:	[/td][td]	[url=http://theindiestone.com/forums/index.php/topic/2530-mod-permissions/?p=36478]Ask for Permission[/url]	[/td][/tr]
+description=[tr][td]	Workshop ID:	[/td][td]	2964179034	[/td][/tr]
+description=[tr][td]	Mod ID:	[/td][td]	pzVehicleWorkshop	[/td][/tr]
+description=[/table][/code]
 tags=Build 41;Framework;Multiplayer;Vehicles
 visibility=unlisted

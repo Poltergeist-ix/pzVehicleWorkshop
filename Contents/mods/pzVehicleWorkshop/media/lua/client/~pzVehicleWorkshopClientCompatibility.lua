@@ -1,4 +1,7 @@
-require "pzVehicleWorkshop/UI_patches"
+require "pzVehicleWorkshop/VehicleMechanics"
+require "pzVehicleWorkshop/VehicleMenu"
 
-require "Vehicles/ISUI/ISVehicleMechanics"
-pzVehicleWorkshop.UI_patches.patchISVehicleMechanics()
+for _,patch in pairs(pzVehicleWorkshop.ClientPatches) do
+    patch()
+end
+pzVehicleWorkshop.ClientPatches = nil

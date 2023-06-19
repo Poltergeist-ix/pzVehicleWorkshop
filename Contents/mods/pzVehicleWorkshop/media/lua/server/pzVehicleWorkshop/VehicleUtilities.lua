@@ -3,6 +3,7 @@ local pzVehicleWorkshop = pzVehicleWorkshop
 local Util = {
     OnCreate = {},
     Update = {},
+    UninstallTest = {},
 }
 
 function Util.changeVehicleScript(vehicle,scriptName,skinIndex)
@@ -138,6 +139,13 @@ function Util.OnCreate.RemoveArmorRecipe(items, result, player)
             return
         end
     end
+end
+
+function Util.UninstallTest.childrenRemoved(vehicle,part,character)
+    for i=0,part:getChildCount()-1 do
+        if part:getChild(i):getInventoryItem() ~= nil then return false end
+    end
+    return Vehicles.UninstallTest.Default(vehicle,part,character)
 end
 
 -- TODO pick one

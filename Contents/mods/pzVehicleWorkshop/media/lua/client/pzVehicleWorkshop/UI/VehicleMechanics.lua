@@ -51,17 +51,17 @@ function Mechanics.Patches.doPartContextMenu(doPartContextMenu)
 
         doPartContextMenu(self,part,x,y)
 
-        if self.vwVehicleSettings ~= nil then
-            if isGamePaused() then return end
-            if not self.playerObj then self.playerObj = getSpecificPlayer(self.playerNum) end
-            if self.playerObj:getVehicle() ~= nil and not (isDebugEnabled() or (isClient() and (isAdmin() or getAccessLevel() == "moderator"))) then return end
+        if isGamePaused() then return end
+        if not self.playerObj then self.playerObj = getSpecificPlayer(self.playerNum) end
+        if self.playerObj:getVehicle() ~= nil and not (isDebugEnabled() or (isClient() and (isAdmin() or getAccessLevel() == "moderator"))) then return end
 
-            pzVehicleWorkshop.EventHandler.triggerDef("OnVehicleMechanicsPartContext",self.vwVehicleSettings,self,part,x,y)
+        pzVehicleWorkshop.EventHandler.triggerDef("OnVehicleMechanicsPartContext",self.vwVehicleSettings,self,part,x,y)
 
-            if JoypadState.players[self.playerNum + 1] then
-                pzVehicleWorkshop.EventHandler.triggerDef("OnVehicleMechanicsVehicleContext",self.vwVehicleSettings,self,x,y)
-            end
+        if JoypadState.players[self.playerNum + 1] then
+            pzVehicleWorkshop.EventHandler.triggerDef("OnVehicleMechanicsVehicleContext",self.vwVehicleSettings,self,x,y)
         end
+
+        if #self.context.options > 0 then self.context:setVisible(true) end
     end
 end
 

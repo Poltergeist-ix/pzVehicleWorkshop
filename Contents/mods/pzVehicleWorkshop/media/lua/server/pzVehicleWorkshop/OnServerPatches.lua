@@ -1,10 +1,14 @@
+require "Vehicles/Vehicles"
+
 local pzVehicleWorkshop = pzVehicleWorkshop
 
-local Patches = pzVehicleWorkshop.ServerPatches or {}
+pzVehicleWorkshop.ServerPatches = pzVehicleWorkshop.ServerPatches or {}
 
-Patches["UninstallTest.Default"] = function(uninstall)
-    return function(vehicle, part, character)
-        local r = uninstall(vehicle, part, character)
+---Hook to check more parts that need to be uninstalled
+pzVehicleWorkshop.ServerPatches["Vehicles.UninstallTest.Default"] = function()
+    local Default = Vehicles.UninstallTest.Default
+    Vehicles.UninstallTest.Default =  function(vehicle, part, character)
+        local r = Default(vehicle, part, character)
         if not r then return r end
         local t = part:getTable("uninstall")
         if not (t and t.requireUninstalledList) then return r end
@@ -15,10 +19,24 @@ Patches["UninstallTest.Default"] = function(uninstall)
     end
 end
 
-function Patches.patchCreateEngine(CreateEngine)
-    return function(vehicle,...)
-        return pzVehicleWorkshop.EventHandler.triggerOverride("OnCreateEngine",vehicle,...) or CreateEngine(vehicle,...)
+---Override Hook for the Create Engine
+pzVehicleWorkshop.ServerPatches["Vehicles.Create.Engine"] = function()
+    local Engine = Vehicles.Create.Engine
+    Vehicles.Create.Engine = function(vehicle,...)
+        return pzVehicleWorkshop.EventHandler.triggerOverride("OnCreateEngine",vehicle,...) or Engine(vehicle,...)
     end
 end
 
-pzVehicleWorkshop.ServerPatches = Patches
+---Hook to Update Engine
+---keep updating parts if other characters (not driver) are inside
+pzVehicleWorkshop.ServerPatches["Vehicles.Update.Engine"] = function()
+    local Engine = Vehicles.Update.Engine
+    Vehicles.Update.Engine = function(vehicle,...)
+        Engine(vehicle,...)
+        if not vehicle:needPartsUpdate() then
+            for i = 1, vehicle:getMaxPassengers() - 1 do
+                if vehicle:getCharacter(i) ~= nil then vehicle:setNeedPartsUpdate(true) break end
+            end
+        end
+    end
+end

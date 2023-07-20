@@ -34,6 +34,12 @@ function OnClientCommands.pzVehicleWorkshop.doorAnim(player,args)
     pzVehicleWorkshop.VehicleUtilities.DoorAnimOnServer(vehicle,vehicle:getPartById(args.partId),player,args.open)
 end
 
+function OnClientCommands.pzVehicleWorkshop.OnEnterVehicle(player,args)
+    local vehicle = player:getVehicle()
+    if not vehicle then return end
+    vehicle:setNeedPartsUpdate(true)
+end
+
 -----------------------------------------------------------------------------------------
 --- Vehicle Commands Extensions
 -----------------------------------------------------------------------------------------

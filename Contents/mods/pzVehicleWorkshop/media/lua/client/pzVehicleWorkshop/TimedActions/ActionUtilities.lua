@@ -1,8 +1,8 @@
 local pzVehicleWorkshop = pzVehicleWorkshop
 
-local Util = {}
+local ActionUtil = {}
 
-function Util.equipWeldingTools(player,recipe,containers)
+function ActionUtil.equipWeldingTools(player,recipe,containers)
     local required = RecipeManager.getAvailableItemsNeeded(recipe,player,containers,nil,nil)
     local BlowTorch, WeldingMask
     for i = 0, required:size() -1 do
@@ -21,7 +21,7 @@ function Util.equipWeldingTools(player,recipe,containers)
     return true
 end
 
-function Util.equipForRecipe(player, recipe, containers)
+function ActionUtil.equipForRecipe(player, recipe, containers)
     --ISVehiclePartMenu.transferRequiredItems(player, part, tbl)
     --ISVehiclePartMenu.equipRequiredItems(player, part, tbl)
     --ISWearClothing:new
@@ -43,7 +43,7 @@ function Util.equipForRecipe(player, recipe, containers)
 
     local prop1, prop2 = recipe:getProp1(), recipe:getProp2()
 
-    if prop1 == "BlowTorch" then valid = Util.equipWeldingTools(player,recipe,containers) end
+    if prop1 == "BlowTorch" then valid = ActionUtil.equipWeldingTools(player,recipe,containers) end
 
     --if not prop1 and not prop2 then
     --    --
@@ -68,11 +68,85 @@ function Util.equipForRecipe(player, recipe, containers)
     return valid
 end
 
-function Util.pathToPart(player,vehicle,part)
+function ActionUtil.pathToPart(player,vehicle,part)
     if player:getVehicle() ~= nil then ISVehicleMenu.onExit(player) end
     local ISPathFindAction = ISPathFindAction:pathToVehicleArea(player, vehicle, part:getArea())
     ISTimedActionQueue.add(ISPathFindAction)
     return ISPathFindAction
 end
 
-pzVehicleWorkshop.ActionUtil = Util
+---Vanilla Craft and Install chain
+function ActionUtil.onCraftAndInstallPart(character,vehicle,part,itemType,recipe)
+    local containers = ISInventoryPaneContextMenu.getContainers(character)
+    if not RecipeManager.IsRecipeValid(recipe, character, nil, containers) then return end
+
+    local availableItems = RecipeManager.getAvailableItemsNeeded(recipe, character, containers, nil, nil)
+    if availableItems:isEmpty() then return end
+    -- local neededItems = {}
+    local transferItems = {}
+    for i=0,availableItems:size() - 1 do
+        local item = availableItems:get(i)
+        -- table.insert(neededItems, item)
+        if not recipe:isCanBeDoneFromFloor() and item:getContainer() ~= character:getInventory() then
+            ISTimedActionQueue.add(ISInventoryTransferAction:new(character, item, item:getContainer(), character:getInventory(), nil))
+            table.insert(transferItems, item)
+        end
+    end
+
+    -- local container = itemsUsed[1]:getContainer()
+    -- if not recipe:isCanBeDoneFromFloor() then
+    --     container = character:getInventory()
+    --     for _,item in ipairs(itemsUsed) do
+    --         if item:getContainer() ~= character:getInventory() then
+    --             table.insert(returnToContainer, item)
+    --         end
+    --     end
+    -- end
+
+    local craftAction = ISCraftAction:new(character, availableItems:get(0), recipe:getTimeToMake(), recipe, character:getInventory(), containers)
+    ISTimedActionQueue.add(craftAction)
+    ISCraftingUI.ReturnItemsToOriginalContainer(character, transferItems)
+
+    craftAction:setOnComplete(function()
+        local item = character:getInventory():getBestTypeEval(itemType,function(a,b)return a:getCondition() - b:getCondition() end)
+        if item ~= nil then
+            local pathAction = pzVehicleWorkshop.ActionUtil.pathToPart(character, vehicle, part)
+            pathAction:setOnComplete(function()
+                if character:getInventory():contains(item) and vehicle:canInstallPart(character, part) then
+                    ISTimedActionQueue.add(ISInstallVehiclePart:new(character, part, item, 200)) --time
+                end
+            end)
+        end
+    end)
+
+end
+
+function ActionUtil.onMountArmor(player, vehicle, part, item, recipe, containers)
+    if ISVehicleMechanics.cheat then
+        ISTimedActionQueue.add(pzVehicleWorkshop.installAction:new(player, vehicle, part, item, recipe, containers))
+    else
+        local pathAction = pzVehicleWorkshop.ActionUtil.pathToPart(player, vehicle, part)
+        pathAction:setOnComplete(function()
+            if RecipeManager.IsRecipeValid(recipe, player, item, containers) then
+                pzVehicleWorkshop.ActionUtil.equipForRecipe(player, recipe, containers)
+                ISTimedActionQueue.add(pzVehicleWorkshop.installAction:new(player, vehicle, part, item, recipe, containers))
+            end
+        end)
+    end
+end
+
+function ActionUtil.onUnmountArmor(player, vehicle, part, item, recipe, containers)
+    if ISVehicleMechanics.cheat then
+        ISTimedActionQueue.add(pzVehicleWorkshop.uninstallAction:new(player, vehicle, part, item, recipe, containers))
+    else
+        local pathAction = pzVehicleWorkshop.ActionUtil.pathToPart(player, vehicle, part)
+        pathAction:setOnComplete(function()
+            if RecipeManager.IsRecipeValid(recipe, player, item, containers) then
+                pzVehicleWorkshop.ActionUtil.equipForRecipe(player, recipe, containers)
+                ISTimedActionQueue.add(pzVehicleWorkshop.uninstallAction:new(player, vehicle, part, item, recipe, containers))
+            end
+        end)
+    end
+end
+
+pzVehicleWorkshop.ActionUtil = ActionUtil

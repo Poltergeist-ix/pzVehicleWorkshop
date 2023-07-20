@@ -312,4 +312,5 @@ end
 --end
 --]]
 
+---deprecated
 pzVehicleWorkshop.ArmoredVanillaVehicles = ArmoredVanillaVehicles

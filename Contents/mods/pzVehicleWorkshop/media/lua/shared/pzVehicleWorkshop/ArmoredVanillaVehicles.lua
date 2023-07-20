@@ -39,4 +39,5 @@ function ArmoredVanillaVehicles.generatePartParents(settings,vehicle)
     if not table.isempty(partsPending) then print("pzVehicleWorkshop: unassigned armor parts") end
 end
 
+---deprecated
 pzVehicleWorkshop.ArmoredVanillaVehicles = ArmoredVanillaVehicles

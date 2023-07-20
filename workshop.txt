@@ -2,12 +2,17 @@ version=1
 id=2964179034
 title=Vehicle Workshop
 description=[h3]
-description=This is a framework for easier management of vehicles.
+description=This is a framework for easier vehicle mod creation.
 description=[/h3]
 description=[hr][/hr]
 description=[url=https://steamcommunity.com/sharedfiles/filedetails/?id=2964213735][img]https://steamuserimages-a.akamaihd.net/ugc/2026099010639229650/9D1581BB6FAD473FD83122B51B59DEF503046F01/[/img][/url]
+description=[hr][/hr]
+description=[url= https://discord.gg/2skchrKrDv ][img]https://raw.githubusercontent.com/Glytch3r/TeamOrbitAds/main/square_serve.gif[/img][/url]
+description=[url= https://steamcommunity.com/sharedfiles/filedetails/?id=2963097079][img]https://raw.githubusercontent.com/Glytch3r/TeamOrbitAds/main/workshop.png[/img][/url]
 description=
 description=[code][table]
+description=[h3]Contributors[/h3]
+description=[tr][td]	-	[/td][td]	-	[/td][/tr]
 description=[h3]Mod info[/h3]
 description=[tr][td]	Permissions:	[/td][td]	[url=http://theindiestone.com/forums/index.php/topic/2530-mod-permissions/?p=36478]Ask for Permission[/url]	[/td][/tr]
 description=[tr][td]	Workshop ID:	[/td][td]	2964179034	[/td][/tr]

@@ -1,12 +1,14 @@
 local pzVehicleWorkshop = pzVehicleWorkshop
 
-local Util = {
+local VehicleUtilities = {
     OnCreate = {},
     Update = {},
+    InstallComplete = {},
     UninstallTest = {},
+    UninstallComplete = {},
 }
 
-function Util.changeVehicleScript(vehicle,scriptName,skinIndex)
+function VehicleUtilities.changeVehicleScript(vehicle,scriptName,skinIndex)
     vehicle:setScriptName(scriptName)
     if not isClient() and not isServer() then
         vehicle:scriptReloaded()
@@ -14,11 +16,11 @@ function Util.changeVehicleScript(vehicle,scriptName,skinIndex)
     --if skinIndex then vehicle:setSkinIndex(skinIndex) end
 end
 
-function Util.createEmpty(vehicle, part)
+function VehicleUtilities.createEmpty(vehicle, part)
     part:setCondition(0)
 end
 
-function Util.DoorAnimOnServer(vehicle,part,player,open)
+function VehicleUtilities.DoorAnimOnServer(vehicle,part,player,open)
     if not part or part:getDoor():isOpen() == open then return end
 
     vehicle:playPartSound(part, player, open and "Open" or "Close")
@@ -31,82 +33,67 @@ function Util.DoorAnimOnServer(vehicle,part,player,open)
     vehicle:transmitPartDoor(part)
 end
 
-function Util.initBaseArmor(vehicle, part)
+function VehicleUtilities.initBaseArmor(vehicle, part)
     local item = part:getInventoryItem()
     if item == nil then return end
     part:setModelVisible(item:getFullType(),true)
 end
 
-function Util.updateBaseArmor(vehicle, part)
-    local pData = part:getModData()
-
-
-    local max = 9999
-    if part:getId() == "Armor_FrontLeftWindow" then max = max * 2 end
-    if part:getId() == "Armor_EngineDoor" then max = max * 7 end
-    local partCondition = part:getCondition()
-    local item = part:getInventoryItem()
-    if not pData.armorCondition or partCondition > pData.prevArmorCondition then
-        pData.armorConditionMax = max
-        pData.armorCondition = item ~= nil and pData.armorConditionMax * partCondition / 100 or 0
-        pData.prevArmorCondition = partCondition
-
-        local prPartId = part:getId():gsub("^Armor_","")
-        local prPart = vehicle:getPartById(prPartId)
-        if part ~= nil then
-            pData.protectedParts = { [prPartId] = prPart:getCondition() }
-        end
-        if prPartId == "TrunkDoor" then
-            pData.protectedParts["TruckBed"] = vehicle:getPartById("TruckBed"):getCondition()
-        end
+function VehicleUtilities.updateBaseArmor(vehicle,part)
+    if not part:getInventoryItem() then return end
+    local armorData = part:getModData().armorData
+    if not armorData or part:getCondition() > armorData.prevArmorCondition then
+        pzVehicleWorkshop.ArmoredVehicles.initArmorData(vehicle,part)
+        armorData = part:getModData().armorData
     end
 
+    local armorCondition = armorData.armorCondition - armorData.prevArmorCondition + part:getCondition()
 
-    if pData.armorCondition <= 0 then return end
-
-    local armorCondition = pData.armorCondition - pData.prevArmorCondition + partCondition
-    --if pData.armorCondition ~= armorCondition then print("vwDebug not same condition") end
-
-    if pData.protectedParts ~= nil then
-        for prId,cond in pairs(pData.protectedParts) do
-            local protectedPart = vehicle:getPartById(prId)
-            local prCondition = protectedPart:getCondition()
-            if prCondition < cond then
-                local dif = cond - prCondition
-                if dif > armorCondition then
-                    dif = armorCondition
-                    armorCondition = 0
-                else
-                    armorCondition = armorCondition - dif
-                    dif = 0
-                end
-                protectedPart:setCondition(cond-dif)
+    for prId,prevCond in pairs(armorData.protectedParts) do
+        local protectedPart = vehicle:getPartById(prId)
+        local cond = protectedPart:getCondition()
+        if cond < prevCond then
+            armorCondition = armorCondition + cond - prevCond
+            if armorCondition < 0 then
+                cond = prevCond + armorCondition
+                armorCondition = 0
             else
-                pData.protectedParts[prId] = prCondition
+                cond = prevCond
             end
-            vehicle:transmitPartCondition(protectedPart)
+            protectedPart:setCondition(cond)
         end
+        armorData.protectedParts[prId] = cond
+        vehicle:transmitPartCondition(protectedPart)
     end
 
-    if armorCondition ~= pData.armorCondition then
-        local newCondition = armorCondition > 0 and armorCondition / pData.armorConditionMax * 100 or 0
-        if newCondition == 0 and not pData.keepDestroyed then
-            --print("vwDebug Armor destroyed ",part:getId())
+    if armorCondition ~= armorData.armorCondition then
+        local newCondition = armorCondition / armorData.armorConditionMax * 100
+        if newCondition == 0 and not armorData.keepDestroyed then
             part:setInventoryItem(nil)
-            part:setAllModelsVisible(false)
             vehicle:transmitPartItem(part)
-        else
-            --print("vwDebug Armor new condition ",part:getId(),newCondition)
-            part:setCondition(newCondition)
+            VehicleUtilities.resetPartModels(vehicle,part)
         end
-        pData.armorCondition = armorCondition
-        pData.prevArmorCondition = newCondition
-        vehicle:transmitPartModData(part)
+        part:setCondition(newCondition)
+        armorData.armorCondition = armorCondition
+        armorData.prevArmorCondition = newCondition
+        -- vehicle:transmitPartModData(part)
     end
     vehicle:transmitPartCondition(part)
 end
 
-function Util.BasicVehicleRecipe_OnCanPerform(recipe, player, item)
+function VehicleUtilities.resetPartModels(vehicle,part)
+    part:setAllModelsVisible(false)
+
+    if part:getInventoryItem() ~= nil then
+        part:setModelVisible(part:getInventoryItem():getFullType(),true)
+    end
+
+    vehicle:doDamageOverlay()
+end
+
+-----------------------------------------------------------------------------------------
+
+function VehicleUtilities.BasicVehicleRecipe_OnCanPerform(recipe, player, item)
     local vehicle = item and item:getModData().vehicleObj
     if not vehicle then return false end
 
@@ -114,13 +101,15 @@ function Util.BasicVehicleRecipe_OnCanPerform(recipe, player, item)
     --etc distance / vehicle:getSquare():getMovingObjects():indexOf(vehicle) < 0 -  / player:getUseableVehicle() == vehicle or player:getNearVehicle() == vehicle
 end
 
-function Util.OnCreate.ArmorRecipe(items, result, player)
+-----------------------------------------------------------------------------------------
+
+function VehicleUtilities.OnCreate.ArmorRecipe(items, result, player)
     local mod = player:getPerkLevel(Perks.Mechanics) + player:getPerkLevel(Perks.MetalWelding) - 5
 
     result:setCondition(math.min(100,ZombRand(50+mod*2,101+mod*mod)))
 end
 
-function Util.OnCreate.RemoveArmorRecipe(items, result, player)
+function VehicleUtilities.OnCreate.RemoveArmorRecipe(items, result, player)
     for i = 0, items:size() - 1 do
         local item = items:get(i)
         local data = item:getModData()
@@ -141,13 +130,39 @@ function Util.OnCreate.RemoveArmorRecipe(items, result, player)
     end
 end
 
-function Util.UninstallTest.childrenRemoved(vehicle,part,character)
+-----------------------------------------------------------------------------------------
+
+function VehicleUtilities.InstallComplete.Default(vehicle,part)
+    VehicleUtilities.resetPartModels(vehicle,part)
+end
+
+function VehicleUtilities.InstallComplete.Armor(vehicle,part)
+    VehicleUtilities.InstallComplete.Default(vehicle,part)
+    pzVehicleWorkshop.ArmoredVehicles.initArmorData(vehicle,part)
+end
+
+-----------------------------------------------------------------------------------------
+
+function VehicleUtilities.UninstallTest.childrenRemoved(vehicle,part,character)
     for i=0,part:getChildCount()-1 do
         if part:getChild(i):getInventoryItem() ~= nil then return false end
     end
     return Vehicles.UninstallTest.Default(vehicle,part,character)
 end
 
+-----------------------------------------------------------------------------------------
+
+function VehicleUtilities.UninstallComplete.Default(vehicle,part,item)
+    VehicleUtilities.resetPartModels(vehicle,part)
+end
+
+function VehicleUtilities.UninstallComplete.Armor(vehicle,part,item)
+    VehicleUtilities.UninstallComplete.Default(vehicle,part)
+    part:getModData().armorData = nil
+end
+
+-----------------------------------------------------------------------------------------
+
 -- TODO pick one
-pzVehicleWorkshop.VehicleUtilities = Util
-pzVehicleWorkshop.Util = Util
+pzVehicleWorkshop.VehicleUtilities = VehicleUtilities
+pzVehicleWorkshop.Util = VehicleUtilities

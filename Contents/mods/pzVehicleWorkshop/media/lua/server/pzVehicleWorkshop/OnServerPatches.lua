@@ -1,34 +1,33 @@
 require "Vehicles/Vehicles"
+require "pzVehicleWorkshop.VehicleUtilities"
 
 local pzVehicleWorkshop = pzVehicleWorkshop
 
 pzVehicleWorkshop.ServerPatches = pzVehicleWorkshop.ServerPatches or {}
 
----Hook to check more parts that need to be uninstalled
-pzVehicleWorkshop.ServerPatches["Vehicles.UninstallTest.Default"] = function()
-    local Default = Vehicles.UninstallTest.Default
-    Vehicles.UninstallTest.Default =  function(vehicle, part, character)
-        local r = Default(vehicle, part, character)
-        if not r then return r end
-        local t = part:getTable("uninstall")
-        if not (t and t.requireUninstalledList) then return r end
-        for _,partId in ipairs(t.requireUninstalledList) do
-            if vehicle:getPartById(partId):getInventoryItem() ~= nil then return false end
-        end
-        return r
-    end
+pzVehicleWorkshop.ServerPatches["Vehicles.InstallComplete.Default"] = function()
+    local original = Vehicles.InstallComplete.Default
+    local hook = pzVehicleWorkshop.VehicleUtilities.InstallComplete.DefaultHook
+    Vehicles.InstallComplete.Default = function(...) original(...); hook(...) end
 end
 
----Override Hook for the Create Engine
+pzVehicleWorkshop.ServerPatches["Vehicles.UninstallTest.Default"] = function()
+    local original = Vehicles.UninstallTest.Default
+    local hook = pzVehicleWorkshop.VehicleUtilities.UninstallTest.DefaultHook
+    Vehicles.UninstallTest.Default = function(...) return original(...) and hook(...) end
+end
+
+pzVehicleWorkshop.ServerPatches["Vehicles.UninstallComplete.Default"] = function()
+    local original = Vehicles.UninstallComplete.Default
+    local hook = pzVehicleWorkshop.VehicleUtilities.UninstallComplete.DefaultHook
+    Vehicles.UninstallComplete.Default = function(...) original(...); hook(...) end
+end
+
 pzVehicleWorkshop.ServerPatches["Vehicles.Create.Engine"] = function()
     local Engine = Vehicles.Create.Engine
-    Vehicles.Create.Engine = function(vehicle,...)
-        return pzVehicleWorkshop.EventHandler.triggerOverride("OnCreateEngine",vehicle,...) or Engine(vehicle,...)
-    end
+    Vehicles.Create.Engine = function(vehicle,...) return pzVehicleWorkshop.EventHandler.triggerOverride("OnCreateEngine",vehicle,...) or Engine(vehicle,...) end
 end
 
----Hook to Update Engine
----keep updating parts if other characters (not driver) are inside
 pzVehicleWorkshop.ServerPatches["Vehicles.Update.Engine"] = function()
     local Engine = Vehicles.Update.Engine
     Vehicles.Update.Engine = function(vehicle,...)

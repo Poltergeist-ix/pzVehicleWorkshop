@@ -8,6 +8,17 @@ local VehicleUtilities = {
     UninstallComplete = {},
 }
 
+---functions called when part is initialised after creation and when vehicle is loaded
+VehicleUtilities.PartInit = {}
+
+---functions used to test items for being added to container
+VehicleUtilities.AcceptItemFunction = {}
+
+---functions used to determine if container can be accessed by character
+VehicleUtilities.ContainerAccess = {}
+
+-----------------------------------------------------------------------------------------
+
 function VehicleUtilities.changeVehicleScript(vehicle,scriptName,skinIndex)
     vehicle:setScriptName(scriptName)
     if not isClient() and not isServer() then
@@ -93,6 +104,31 @@ end
 
 -----------------------------------------------------------------------------------------
 
+function VehicleUtilities.PartInit.RoofRack(vehicle,part)
+    if part:getInventoryItem() ~= nil then
+        VehicleUtilities.resetPartModels(vehicle,part)
+        part:getItemContainer():setAcceptItemFunction("pzVehicleWorkshop.VehicleUtilities.AcceptItemFunction.RoofRack")
+    end
+end
+
+-----------------------------------------------------------------------------------------
+
+function VehicleUtilities.AcceptItemFunction.RoofRack(container,item)
+    if item:getActualWeight() >= 1 then return true end
+    return false
+end
+
+-----------------------------------------------------------------------------------------
+
+function VehicleUtilities.ContainerAccess.OutsideOpenContainer(vehicle, part, chr)
+	if chr:getVehicle() then return false end
+    -- if not part:getInventoryItem() then return end
+	if not vehicle:isInArea(part:getArea(), chr) then return false end
+	return true
+end
+
+-----------------------------------------------------------------------------------------
+
 function VehicleUtilities.BasicVehicleRecipe_OnCanPerform(recipe, player, item)
     local vehicle = item and item:getModData().vehicleObj
     if not vehicle then return false end
@@ -132,7 +168,22 @@ end
 
 -----------------------------------------------------------------------------------------
 
+function VehicleUtilities.InstallComplete.DefaultHook(vehicle,part)
+    if part:getTable("install").blocksUninstall ~= nil then
+        for _,blockedId in ipairs(part:getTable("install").blocksUninstall:split(";")) do
+            local blocked = vehicle:getPartById(blockedId)
+            if blocked ~= nil then
+                if not blocked:getModData().blockedUninstall then blocked:getModData().blockedUninstall = {part:getId()}
+                else table.insert(blocked:getModData().blockedUninstall,part:getId())
+                end
+                vehicle:transmitPartModData(blocked)
+            end
+        end
+    end
+end
+
 function VehicleUtilities.InstallComplete.Default(vehicle,part)
+    Vehicles.InstallComplete.Default(vehicle,part)
     VehicleUtilities.resetPartModels(vehicle,part)
 end
 
@@ -143,6 +194,20 @@ end
 
 -----------------------------------------------------------------------------------------
 
+---called when Vehicles.UninstallTest.Default returns true
+function VehicleUtilities.UninstallTest.DefaultHook(vehicle,part,character)
+    if part:getModData().blockedUninstall then
+        local blockParts = part:getModData().blockedUninstall
+        for i = #blockParts, 1, -1 do
+            local blockPart = vehicle:getPartById(blockParts[i])
+            if blockPart ~= nil and blockPart:getInventoryItem() ~= nil then return false
+            else table.remove(blockParts,i)
+            end
+        end
+    end
+    return true
+end
+
 function VehicleUtilities.UninstallTest.childrenRemoved(vehicle,part,character)
     for i=0,part:getChildCount()-1 do
         if part:getChild(i):getInventoryItem() ~= nil then return false end
@@ -152,7 +217,24 @@ end
 
 -----------------------------------------------------------------------------------------
 
+function VehicleUtilities.UninstallComplete.DefaultHook(vehicle,part,item)
+    if part:getTable("install").blocksUninstall ~= nil then
+        for _,blockedId in ipairs(part:getTable("install").blocksUninstall:split(";")) do
+            local blocked = vehicle:getPartById(blockedId)
+            if blocked ~= nil and blocked:getModData().blockedUninstall ~= nil then
+                for i, v in ipairs(blocked:getModData().blockedUninstall) do
+                    if v == part:getId() then
+                        table.remove(blocked:getModData().blockedUninstall,i)
+                        break
+                    end
+                end
+            end
+        end
+    end
+end
+
 function VehicleUtilities.UninstallComplete.Default(vehicle,part,item)
+    Vehicles.UninstallComplete.Default(vehicle,part)
     VehicleUtilities.resetPartModels(vehicle,part)
 end
 

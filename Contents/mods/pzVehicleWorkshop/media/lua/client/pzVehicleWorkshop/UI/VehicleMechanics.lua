@@ -61,7 +61,7 @@ function VehicleMechanics.AltDrawItems(vehicleSettings, window, y, item, alt)
     return VehicleMechanics.drawArmorItems(vehicleSettings, window, y, item, alt)
 end
 
-function VehicleMechanics.doPartContextMenu2(vehicleSettings, self, part, x, y)
+function VehicleMechanics.doPartContextMenuHook(vehicleSettings, self, part, x, y)
     local context = self.context
     if part:getInventoryItem() ~= nil then
         local unmount = part:getTable("unmountRecipes")
@@ -174,14 +174,22 @@ function VehicleMechanics.doPartContextMenu2(vehicleSettings, self, part, x, y)
     end
 end
 
------------------------------------------------------------------------------------------
-
-function VehicleMechanics.onCraftPart(player,vehicle,part,recipe,inventory,containers)
-    local action = ISCraftAction:new(self.character, nil, recipe:getTimeToMake(), recipe, inventory, containers)
-    action:setOnComplete(ISCraftingUI.onCraftComplete, self, action, recipe, inventory, containers)
-    ISTimedActionQueue.add(action)
+function VehicleMechanics.doMenuTooltipHook(self, part, option, lua, name)
+    local vehicle = part:getVehicle()
+    local tooltip = option.toolTip
+    if lua == "uninstall" and part:getModData().blockedUninstall then
+        local blockParts = part:getModData().blockedUninstall
+        for i = #blockParts, 1, -1 do
+            local blockPart = vehicle:getPartById(blockParts[i])
+            if blockPart ~= nil and blockPart:getInventoryItem() ~= nil then
+                tooltip.description = tooltip.description .. " <LINE> " .. ISVehicleMechanics.bhs .. " " .. getText("Tooltip_vehicle_requireUnistalled", getText("IGUI_VehiclePart" .. blockParts[i]))
+                -- option.notAvailable = true
+            end
+        end
+    end
 end
 
+Events.OnVehicleMechanicsDoMenuTooltip.Add(VehicleMechanics.doMenuTooltipHook)
 
 -----------------------------------------------------------------------------------------
 --- ISVehicleMechanics Patches
@@ -239,6 +247,13 @@ function VehicleMechanics.Patches.onRightMouseUp(onRightMouseUp)
         onRightMouseUp(self,x,y)
 
         pzVehicleWorkshop.EventHandler.triggerDef("OnVehicleMechanicsVehicleContext",self.vwVehicleSettings,self,x,y)
+    end
+end
+
+function VehicleMechanics.Patches.doMenuTooltip(doMenuTooltip)
+    return function(self,...)
+        doMenuTooltip(self,...)
+        pzVehicleWorkshop.EventHandler.triggerDef("OnVehicleMechanicsDoMenuTooltip",self.vwVehicleSettings,self,...)
     end
 end
 

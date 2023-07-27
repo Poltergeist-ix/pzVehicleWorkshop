@@ -93,6 +93,7 @@ do
     addEvent("OnVehicleMechanicsOpen")
     addEvent("OnVehicleMechanicsPartContext")
     addEvent("OnVehicleMechanicsVehicleContext")
+    addEvent("OnVehicleMechanicsDoMenuTooltip")
     addEvent("OnShowVehicleRadial")
     addEvent("OnShowVehicleRadialOutside")
     addEvent("OnCreateEngine")

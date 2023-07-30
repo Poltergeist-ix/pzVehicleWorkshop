@@ -40,6 +40,18 @@ function OnClientCommands.pzVehicleWorkshop.OnEnterVehicle(player,args)
     vehicle:setNeedPartsUpdate(true)
 end
 
+function OnClientCommands.pzVehicleWorkshop.resetPartModelsMultiple(player,args)
+    for vehicleId,v in pairs(args) do
+        local vehicle = getVehicleById(vehicleId)
+        if vehicle ~= nil then
+            for partId,_ in pairs(v) do
+                local part = vehicle:getPartById(partId)
+                pzVehicleWorkshop.VehicleUtilities.resetPartModels(vehicle,part)
+            end
+        end
+    end
+end
+
 -----------------------------------------------------------------------------------------
 --- Vehicle Commands Extensions
 -----------------------------------------------------------------------------------------

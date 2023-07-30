@@ -2,22 +2,42 @@ local pzVehicleWorkshop = pzVehicleWorkshop
 
 local VehicleUtilities = {
     OnCreate = {},
-    Update = {},
     InstallComplete = {},
     UninstallTest = {},
     UninstallComplete = {},
 }
 
 ---functions called when part is initialised after creation and when vehicle is loaded
-VehicleUtilities.PartInit = {}
+VehicleUtilities.Init = {}
 
----functions used to test items for being added to container
-VehicleUtilities.AcceptItemFunction = {}
+--- functions called when part is updated on the server or SP, 
+--- needPartsUpdate() or isMechanicUIOpen() must return true to trigger update
+VehicleUtilities.Update = {}
 
----functions used to determine if container can be accessed by character
+--- functions used to determine if container can be accessed by character, 
+--- set as test in part container script block
 VehicleUtilities.ContainerAccess = {}
 
+---called to test items before being added to container
+VehicleUtilities.AcceptItemFunction = {}
+
+--[[
+### Usage:
+> called after a successful item transfer to / from a vehicle part container  
+### Param:  
+> part: VehiclePart, item: InventoryItem, isAdd: Boolean
+]]
+VehicleUtilities.OnTransferItem = {}
+
 -----------------------------------------------------------------------------------------
+
+function VehicleUtilities.callLua(name,...)
+    local v = _G
+    for _,key in ipairs(name:split("\\.")) do
+        v = v[key]
+    end
+    return v(...)
+end
 
 function VehicleUtilities.changeVehicleScript(vehicle,scriptName,skinIndex)
     vehicle:setScriptName(scriptName)
@@ -94,9 +114,62 @@ end
 
 function VehicleUtilities.resetPartModels(vehicle,part)
     part:setAllModelsVisible(false)
+    if zxTestShowAllModels then part:setAllModelsVisible(true) return end
 
     if part:getInventoryItem() ~= nil then
         part:setModelVisible(part:getInventoryItem():getFullType(),true)
+
+        if part:getTable("containerModels") ~= nil and part:getItemContainer() ~= nil then
+            local models = part:getTable("containerModels")
+            if models.Capacity ~= nil then
+                local full = part:getItemContainer():getContentsWeight() / part:getItemContainer():getCapacity()
+                if full > 1 then full = 1 end
+                full = math.ceil(full * #models.Capacity)
+                if full <= 0 then --skip
+                elseif models.Capacity.onlyOne then
+                    part:setModelVisible(models.Capacity[full],true)
+                else
+                    for i = 1, full do
+                        part:setModelVisible(models.Capacity[i],true)
+                    end
+                end
+            end
+
+            if models.ItemCounts ~= nil then
+                local counts = {}
+                local items = part:getItemContainer():getItems()
+                for i = 0, items:size() -1 do
+                    local ft = items:get(i):getFullType()
+                    counts[ft] = (counts[ft] or 0) + 1
+                end
+
+                for i = 1, #models.ItemCounts do
+                    local t = models.ItemCounts[i]
+                    local count = 0
+                    for it = 1, #t.itemTypes do
+                        count = count + (counts[t.itemTypes[it]] or 0)
+                    end
+                    if count == 0 then --skip
+                    elseif t.umodels then
+                        for im = #t.umodels, 1, -1 do
+                            if count >= tonumber(t.umodels[im].count) then
+                                part:setModelVisible(t.umodels[im].model,true)
+                                if t.onlyOne then break end
+                            end
+                        end
+                    else
+                        if t.onlyOne then
+                            part:setModelVisible(t[math.min(count,#t)],true)
+                        else
+                            for im = 1, math.min(count,#t) do
+                                part:setModelVisible(t[im],true)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
     end
 
     vehicle:doDamageOverlay()
@@ -104,10 +177,10 @@ end
 
 -----------------------------------------------------------------------------------------
 
-function VehicleUtilities.PartInit.RoofRack(vehicle,part)
-    if part:getInventoryItem() ~= nil then
-        VehicleUtilities.resetPartModels(vehicle,part)
-        part:getItemContainer():setAcceptItemFunction("pzVehicleWorkshop.VehicleUtilities.AcceptItemFunction.RoofRack")
+function VehicleUtilities.Init.RoofRack(vehicle,part)
+    VehicleUtilities.resetPartModels(vehicle,part)
+    if part:getItemContainer() ~= nil then
+        part:getItemContainer():setAcceptItemFunction(part:getLuaFunction("AcceptItemFunction"))
     end
 end
 
@@ -118,9 +191,15 @@ function VehicleUtilities.AcceptItemFunction.RoofRack(container,item)
     return false
 end
 
+function VehicleUtilities.AcceptItemFunction.SpiffoRoofRack(container,item)
+    if item:getActualWeight() >= 1 or item:getType() == "Spiffo" then return true end
+    return false
+end
+
 -----------------------------------------------------------------------------------------
 
 function VehicleUtilities.ContainerAccess.OutsideOpenContainer(vehicle, part, chr)
+    if not zxTestPrinted then zxTestPrinted = true; print("zxLog, on ContainerAccess.OutsideOpenContainer") end
 	if chr:getVehicle() then return false end
     -- if not part:getInventoryItem() then return end
 	if not vehicle:isInArea(part:getArea(), chr) then return false end
@@ -241,6 +320,23 @@ end
 function VehicleUtilities.UninstallComplete.Armor(vehicle,part,item)
     VehicleUtilities.UninstallComplete.Default(vehicle,part)
     part:getModData().armorData = nil
+end
+
+-----------------------------------------------------------------------------------------
+
+do
+    local pendingUpdate = {}
+    local function sendUpdate()
+        sendClientCommand("pzVehicleWorkshop","resetPartModelsMultiple",pendingUpdate)
+        pendingUpdate = {}
+    end
+
+    function VehicleUtilities.OnTransferItem.ResetModelsOnServer(part,item,isAdd)
+        local id = part:getVehicle():getId()
+        pendingUpdate[id] = pendingUpdate[id] or {}
+        pendingUpdate[id][part:getId()] = true
+        pzVehicleWorkshop.Timing.debounce(0.5,sendUpdate)
+    end
 end
 
 -----------------------------------------------------------------------------------------

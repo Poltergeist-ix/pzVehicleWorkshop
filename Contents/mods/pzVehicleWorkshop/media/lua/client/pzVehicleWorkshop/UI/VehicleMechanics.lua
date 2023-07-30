@@ -61,6 +61,7 @@ function VehicleMechanics.AltDrawItems(vehicleSettings, window, y, item, alt)
     return VehicleMechanics.drawArmorItems(vehicleSettings, window, y, item, alt)
 end
 
+---TODO add to event
 function VehicleMechanics.doPartContextMenuHook(vehicleSettings, self, part, x, y)
     local context = self.context
     if part:getInventoryItem() ~= nil then

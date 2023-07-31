@@ -331,7 +331,7 @@ do
         pendingUpdate = {}
     end
 
-    function VehicleUtilities.OnTransferItem.ResetModelsOnServer(part,item,isAdd)
+    function VehicleUtilities.OnTransferItem.resetModelsOnServer(part,item,isAdd)
         local id = part:getVehicle():getId()
         pendingUpdate[id] = pendingUpdate[id] or {}
         pendingUpdate[id][part:getId()] = true

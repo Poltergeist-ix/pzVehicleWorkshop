@@ -1,5 +1,6 @@
 require "pzVehicleWorkshop/UI"
 local pzVehicleWorkshop = pzVehicleWorkshop
+local VehicleUtil = require "pzVehicleWorkshop.VehicleUtil"
 
 -----------------------------------------------------------------------------------------
 --- ISVehicleMechanics
@@ -22,7 +23,7 @@ local VehicleMechanics = {}
 --end
 
 function VehicleMechanics.sortBodyworkArmorParts(vehicleSettings,window)
-    if not vehicleSettings.partParents then pzVehicleWorkshop.ArmoredVehicles.generatePartParents(vehicleSettings,window.vehicle) end
+    if not vehicleSettings.partParents then VehicleUtil.generatePartParents(vehicleSettings,window.vehicle) end
 
     local index = 0
     for i, item in ipairs(copyTable(window.bodyworklist.items)) do

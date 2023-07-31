@@ -31,14 +31,6 @@ VehicleUtilities.OnTransferItem = {}
 
 -----------------------------------------------------------------------------------------
 
-function VehicleUtilities.callLua(name,...)
-    local v = _G
-    for _,key in ipairs(name:split("\\.")) do
-        v = v[key]
-    end
-    return v(...)
-end
-
 function VehicleUtilities.changeVehicleScript(vehicle,scriptName,skinIndex)
     vehicle:setScriptName(scriptName)
     if not isClient() and not isServer() then
@@ -327,7 +319,7 @@ end
 do
     local pendingUpdate = {}
     local function sendUpdate()
-        sendClientCommand("pzVehicleWorkshop","resetPartModelsMultiple",pendingUpdate)
+        sendClientCommand("pzVehicleWorkshop","resetModelsMul",pendingUpdate)
         pendingUpdate = {}
     end
 

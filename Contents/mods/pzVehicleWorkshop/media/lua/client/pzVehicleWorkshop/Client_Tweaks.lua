@@ -2,9 +2,11 @@ require "pzVehicleWorkshop.Client_Events"
 
 local Tweaks = {}
 
+local callLua = require("pzVehicleWorkshop.Util").callLua
+
 local function partTransferItem(part,item,isAdd)
-    if part ~= nil and part:getLuaFunction("OnTransferItem") ~= nil then
-        pzVehicleWorkshop.VehicleUtilities.callLua(part:getLuaFunction("OnTransferItem"),part,item,isAdd)
+    if part:getLuaFunction("OnTransferItem") ~= nil then
+        callLua(part:getLuaFunction("OnTransferItem"),part,item,isAdd)
     end
 end
 
@@ -14,8 +16,12 @@ Tweaks.OnEnterVehicle = function(character)
 end
 
 Tweaks.OnTransferItem = function (action,item)
-    partTransferItem(action.srcContainer:getVehiclePart(),item,false)
-    partTransferItem(action.destContainer:getVehiclePart(),item,true)
+    if action.srcContainer:getVehiclePart() ~= nil then
+        partTransferItem(action.srcContainer:getVehiclePart(),item,false)
+    end
+    if action.destContainer:getVehiclePart() ~= nil then
+        partTransferItem(action.destContainer:getVehiclePart(),item,true)
+    end
 end
 
 Events.OnEnterVehicle.Add(Tweaks.OnEnterVehicle)

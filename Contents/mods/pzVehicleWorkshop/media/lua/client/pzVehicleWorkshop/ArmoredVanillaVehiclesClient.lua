@@ -284,18 +284,18 @@ function ArmoredVanillaVehicles.addArmorOptions(settings, self, part, x, y)
     if hasOptions then self.context:setVisible(true) end
 end
 
-do
-    local add = pzVehicleWorkshop.VehicleSettings.add
+-- do
+--     local add = pzVehicleWorkshop.VehicleSettings.add
 
-    for mod, base in pairs(pzVehicleWorkshop.ArmoredVanillaVehicles.armorVehicles ) do
-        add{
-            id = mod,
-            OnVehicleMechanicsOpen = ArmoredVanillaVehicles.openPanel,
-            OnVehicleMechanicsDrawItems = ArmoredVanillaVehicles.drawArmorItems,
-            OnVehicleMechanicsPartContext = ArmoredVanillaVehicles.addArmorOptions,
-        }
-    end
-end
+--     for mod, base in pairs(pzVehicleWorkshop.ArmoredVanillaVehicles.armorVehicles ) do
+--         add{
+--             id = mod,
+--             OnVehicleMechanicsOpen = ArmoredVanillaVehicles.openPanel,
+--             OnVehicleMechanicsDrawItems = ArmoredVanillaVehicles.drawArmorItems,
+--             OnVehicleMechanicsPartContext = ArmoredVanillaVehicles.addArmorOptions,
+--         }
+--     end
+-- end
 
 --[[
 --for _,scriptName in ipairs({"Base.CarStationWagon","Base.CarStationWagon2"}) do

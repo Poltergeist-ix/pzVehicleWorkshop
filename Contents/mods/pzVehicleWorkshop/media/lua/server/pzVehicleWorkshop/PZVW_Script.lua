@@ -1,5 +1,5 @@
 local pzVehicleWorkshop = pzVehicleWorkshop
-local VehicleUtil = require "pzVehicleWorkshop.VehicleUtil"
+local VehicleUtil = require "pzVehicleWorkshop/VehicleUtil"
 
 PZVW_Script = {}
 
@@ -94,7 +94,7 @@ function PZVW_Script.Update.Armor(vehicle,part)
 
     if armorCondition ~= armorData.armorCondition then
         local newCondition = armorCondition / armorData.armorConditionMax * 100
-        if newCondition == 0 and not armorData.keepDestroyed then --fixme uninstall logic
+        if newCondition == 0 and not armorData.keepDestroyed then --fixme uninstall logic or unmount for armor
             part:setInventoryItem(nil)
             vehicle:transmitPartItem(part)
             VehicleUtil.resetPartModels(vehicle,part)
@@ -150,6 +150,10 @@ function PZVW_Script.UninstallTest.DefaultHook(vehicle,part,character)
     return true
 end
 
+function PZVW_Script.UninstallTest.Container(vehicle,part,character)
+    return (ISVehicleMechanics.cheat or part:getItemContainer():isEmpty()) and Vehicles.UninstallTest.Default(vehicle,part,character)
+end
+
 function PZVW_Script.UninstallTest.childrenRemoved(vehicle,part,character)
     for i=0,part:getChildCount()-1 do
         if part:getChild(i):getInventoryItem() ~= nil then return false end
@@ -190,8 +194,8 @@ end
 
 function PZVW_Script.ContainerAccess.OutsideOpenContainer(vehicle, part, chr)
 	if chr:getVehicle() then return false end
-    -- if not part:getInventoryItem() then return end
 	if not vehicle:isInArea(part:getArea(), chr) then return false end
+    if not part:getInventoryItem() and part:getItemType() ~= nil and not part:getItemType():isEmpty() then return false end
 	return true
 end
 

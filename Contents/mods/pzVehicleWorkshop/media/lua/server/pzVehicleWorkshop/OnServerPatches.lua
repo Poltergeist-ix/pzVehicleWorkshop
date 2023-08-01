@@ -1,5 +1,5 @@
 require "Vehicles/Vehicles"
-require "pzVehicleWorkshop.VehicleUtilities"
+require "pzVehicleWorkshop/VehicleUtilities"
 
 local pzVehicleWorkshop = pzVehicleWorkshop
 

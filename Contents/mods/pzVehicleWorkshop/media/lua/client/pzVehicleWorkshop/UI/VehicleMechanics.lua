@@ -1,6 +1,6 @@
-require "pzVehicleWorkshop/UI"
+require "pzVehicleWorkshop/UI/UI"
 local pzVehicleWorkshop = pzVehicleWorkshop
-local VehicleUtil = require "pzVehicleWorkshop.VehicleUtil"
+local VehicleUtil = require "pzVehicleWorkshop/VehicleUtil"
 
 -----------------------------------------------------------------------------------------
 --- ISVehicleMechanics
@@ -22,32 +22,37 @@ local VehicleMechanics = {}
 --    end
 --end
 
-function VehicleMechanics.sortBodyworkArmorParts(vehicleSettings,window)
-    if not vehicleSettings.partParents then VehicleUtil.generatePartParents(vehicleSettings,window.vehicle) end
 
+
+function VehicleMechanics.insertArmorPartsToTable(vehicle,listbox,groups)
     local index = 0
-    for i, item in ipairs(copyTable(window.bodyworklist.items)) do
+    local t = {}
+    -- table.insert(t,"\nzxLog items "..tostring(#listbox.items))
+    for i = 1, #listbox.items do
         index = index + 1
+        local item = listbox.items[index]
+        item.itemindex = index
 
         local part = item.item.part
-        local partId = part and part:getId()
-
-        item.itemindex = index
-        window.bodyworklist.items[index] = item
-
-        if vehicleSettings.partParents[partId] then
+        local partId = part ~= nil and part:getId()
+        -- table.insert(t,"\nzxLog PartId "..tostring(partId).." "..i)
+        if groups[partId] ~= nil then
+            -- table.insert(t,"\nzxLog insert PartId "..tostring(groups[partId]))
             index = index + 1
-            local prPart = window.vehicle:getPartById(vehicleSettings.partParents[partId])
-            local newPart = {
-                name = getText("IGUI_VehiclePart" .. prPart:getId()),
-                part = prPart
+            local newPartTable = {
+                name = getText("IGUI_VehiclePart" .. groups[partId]),
+                part = vehicle:getPartById(groups[partId])
             }
-            local item = window.bodyworklist:addItem(newPart.name,newPart)
-            item.itemindex = index
-            window.bodyworklist.items[index] = item
+            listbox:insertItem(index,newPartTable.name,newPartTable)
         end
     end
+    -- print(table.concat(t))
+end
 
+function VehicleMechanics.insertArmorParts(vehicleSettings,window)
+    if not vehicleSettings.partParents then VehicleUtil.generatePartParents(vehicleSettings,window.vehicle) end
+    VehicleMechanics.insertArmorPartsToTable(window.vehicle,window.listbox,vehicleSettings.partParents)
+    VehicleMechanics.insertArmorPartsToTable(window.vehicle,window.bodyworklist,vehicleSettings.partParents)
 end
 
 function VehicleMechanics.drawArmorItems(vehicleSettings, window, y, item, alt)

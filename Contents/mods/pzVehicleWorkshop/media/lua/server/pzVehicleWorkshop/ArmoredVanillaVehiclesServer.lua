@@ -25,12 +25,12 @@ function avv.createEngine(def,vehicle,part)
     return false
 end
 
-do
-    local VehicleSettings = pzVehicleWorkshop.VehicleSettings
+-- do
+--     local VehicleSettings = pzVehicleWorkshop.VehicleSettings
 
-    for base,mod in pairs(pzVehicleWorkshop.ArmoredVanillaVehicles.vanillaVehicles ) do
-        VehicleSettings.add{ id = base, OnCreateEngine = avv.createEngine, replaceTypes = mod }
-    end
-end
+--     for base,mod in pairs(pzVehicleWorkshop.ArmoredVanillaVehicles.vanillaVehicles ) do
+--         VehicleSettings.add{ id = base, OnCreateEngine = avv.createEngine, replaceTypes = mod }
+--     end
+-- end
 
 return avv

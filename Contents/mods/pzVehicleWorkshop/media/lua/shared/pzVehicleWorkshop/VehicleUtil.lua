@@ -92,9 +92,9 @@ function VehicleUtil.generatePartParents(settings,vehicle)
     for i = 0, vehicle:getPartCount() - 1 do
         local part = vehicle:getPartByIndex(i)
         local partId = part:getId()
-        local sub, n = partId:gsub("^Armor_","",1)
-        if n == 1 then
-            if partsFound[sub] then
+        if part:getCategory() == "nodisplay" and partId:find("^Armor") ~= nil then
+            local sub = partId:gsub("^Armor_","")
+            if partsFound[sub] ~= nil then
                 settings.partParents[sub] = partId
             else
                 partsPending[sub] = partId
@@ -103,10 +103,10 @@ function VehicleUtil.generatePartParents(settings,vehicle)
             settings.partParents[partId] = partsPending[partId]
             partsPending[partId] = nil
         end
-        partsFound[partId] = true
+        partsFound[partId] = part
     end
 
-    if not table.isempty(partsPending) then print("pzVehicleWorkshop: unassigned armor parts") end
+    if not table.isempty(partsPending) then print("pzVehicleWorkshop: unassigned armor parts"); for k,v in pairs(partsPending) do print("no match for part "..v) end end
 end
 
 function VehicleUtil.initArmorData(vehicle,part)
@@ -114,15 +114,22 @@ function VehicleUtil.initArmorData(vehicle,part)
     armorData.prevArmorCondition = part:getCondition()
     armorData.armorConditionMax = part:getInventoryItem():getModData().maxProtection or 9999
     armorData.armorCondition = armorData.armorConditionMax * armorData.prevArmorCondition / 100
-    local prPartId = part:getId():gsub("^Armor_","")
+    local id = part:getId()
+    local prPartId = id:gsub("^Armor_","")
     local prPart = vehicle:getPartById(prPartId)
     if prPart ~= nil then
         armorData.protectedParts = { [prPartId] = prPart:getCondition() }
     else
         armorData.protectedParts = {}
     end
-    if prPartId == "TrunkDoor" then
+    if id == "Armor_TrunkDoor" then
         armorData.protectedParts["TruckBed"] = vehicle:getPartById("TruckBed"):getCondition()
+    elseif id == "Armor_FrontBumper" then
+        armorData.protectedParts["HeadlightLeft"] = vehicle:getPartById("HeadlightLeft"):getCondition()
+        armorData.protectedParts["HeadlightRight"] = vehicle:getPartById("HeadlightRight"):getCondition()
+    elseif id == "Armor_RearBumper" then
+        armorData.protectedParts["HeadlightRearLeft"] = vehicle:getPartById("HeadlightRearLeft"):getCondition()
+        armorData.protectedParts["HeadlightRearRight"] = vehicle:getPartById("HeadlightRearRight"):getCondition()
     end
 
     part:getModData().armorData = armorData

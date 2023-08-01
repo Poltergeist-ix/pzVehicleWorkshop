@@ -1,6 +1,28 @@
 IGUI_EN = {
+
+    IGUI_VehiclePartArmor_FrontBumper = "Bumper Armor",
+    IGUI_VehiclePartArmor_RearBumper = "Rear Bumper Armor",
+    IGUI_VehiclePartArmor_EngineDoor = "Hood Armor",
+    IGUI_VehiclePartArmor_TrunkDoor = "Trunk Lid Armor",
+    IGUI_VehiclePartArmor_Windshield = "Windshield Armor",
+    IGUI_VehiclePartArmor_WindshieldRear = "Rear Windshield Armor",
+    IGUI_VehiclePartArmor_WindowFrontLeft = "Front Left Window Armor",
+    IGUI_VehiclePartArmor_WindowFrontRight = "Front Right Window Armor",
+    IGUI_VehiclePartArmor_WindowRearLeft = "Rear Left Window Armor",
+    IGUI_VehiclePartArmor_WindowRearRight = "Rear Right Window Armor",
+    IGUI_VehiclePartArmor_DoorFrontLeft = "Front Left Door Armor",
+    IGUI_VehiclePartArmor_DoorFrontRight = "Front Right Door Armor",
+    IGUI_VehiclePartArmor_DoorRearLeft = "Rear Left Door Armor",
+    IGUI_VehiclePartArmor_DoorRearRight = "Rear Right Door Armor",
+    IGUI_VehiclePartArmor_WheelFrontLeft = "Front Left Wheel Armor",
+    IGUI_VehiclePartArmor_WheelFrontRight = "Front Right Wheel Armor",
+    IGUI_VehiclePartArmor_WheelRearLeft = "Rear Left Wheel Armor",
+    IGUI_VehiclePartArmor_WheelRearRight = "Rear Right Wheel Armor",
+    IGUI_VehiclePartRoofRack = "Roof Rack",
+
     IGUI_pzVehicleWorkshop_AnimOpen_flipLamps = "Open Flip Lamps",
     IGUI_pzVehicleWorkshop_AnimClose_flipLamps = "Close Flip Lamps",
     IGUI_pzVehicleWorkshop_AnimOpen_convertible = "Open Roof",
     IGUI_pzVehicleWorkshop_AnimClose_convertible = "Close Roof",
+    
 }

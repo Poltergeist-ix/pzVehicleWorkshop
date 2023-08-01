@@ -3,7 +3,7 @@ if isClient() then return end
 local pzVehicleWorkshop = pzVehicleWorkshop
 local OnClientCommands = pzVehicleWorkshop.OnClientCommands or {}
 local wantNoise = getDebug()
-local VehicleUtil = require "pzVehicleWorkshop.VehicleUtil"
+local VehicleUtil = require "pzVehicleWorkshop/VehicleUtil"
 
 -----------------------------------------------------------------------------------------
 --- pzVehicleWorkshop Commands

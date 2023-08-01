@@ -1,8 +1,8 @@
 require "pzVehicleWorkshop.Client_Events"
 
-local Tweaks = {}
+local OnEvents = {}
 
-local callLua = require("pzVehicleWorkshop.Util").callLua
+local callLua = require("pzVehicleWorkshop/Util").callLua
 
 local function partTransferItem(part,item,isAdd)
     if part:getLuaFunction("OnTransferItem") ~= nil then
@@ -11,11 +11,11 @@ local function partTransferItem(part,item,isAdd)
 end
 
 ---Send Command for server trigger
-Tweaks.OnEnterVehicle = function(character)
+OnEvents.OnEnterVehicle = function(character)
     sendClientCommand(character,"pzVehicleWorkshop","OnEnterVehicle",{})
 end
 
-Tweaks.OnTransferItem = function (action,item)
+OnEvents.OnTransferItem = function (action,item)
     if action.srcContainer:getVehiclePart() ~= nil then
         partTransferItem(action.srcContainer:getVehiclePart(),item,false)
     end
@@ -24,7 +24,14 @@ Tweaks.OnTransferItem = function (action,item)
     end
 end
 
-Events.OnEnterVehicle.Add(Tweaks.OnEnterVehicle)
-Events.OnTransferItem.Add(Tweaks.OnTransferItem)
+Events.OnEnterVehicle.Add(OnEvents.OnEnterVehicle)
+Events.OnTransferItem.Add(OnEvents.OnTransferItem)
+zx.setKeyFunc(Keyboard.KEY_X,function(player)
+    local vehicle = getPlayer():getVehicle()
+    if not vehicle then return end
+    local part = vehicle:getPartById("ATA2InteractiveTrunkRoofRack")
+    if not part then return end
+    print("zxLog ",part:getCondition()," / ",part:getContainerCapacity())
+end)
 
-return Tweaks
+return OnEvents

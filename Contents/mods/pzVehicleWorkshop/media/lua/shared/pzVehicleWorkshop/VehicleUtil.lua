@@ -110,26 +110,17 @@ function VehicleUtil.generatePartParents(settings,vehicle)
 end
 
 function VehicleUtil.initArmorData(vehicle,part)
+    local armor = part:getTable("armor")
     local armorData = part:getModData().armorData or {}
     armorData.prevArmorCondition = part:getCondition()
-    armorData.armorConditionMax = part:getInventoryItem():getModData().maxProtection or 9999
+    armorData.armorConditionMax = part:getInventoryItem() ~= nil and part:getInventoryItem():getModData().maxProtection or armor.maxProtection
     armorData.armorCondition = armorData.armorConditionMax * armorData.prevArmorCondition / 100
-    local id = part:getId()
-    local prPartId = id:gsub("^Armor_","")
-    local prPart = vehicle:getPartById(prPartId)
-    if prPart ~= nil then
-        armorData.protectedParts = { [prPartId] = prPart:getCondition() }
-    else
-        armorData.protectedParts = {}
-    end
-    if id == "Armor_TrunkDoor" then
-        armorData.protectedParts["TruckBed"] = vehicle:getPartById("TruckBed"):getCondition()
-    elseif id == "Armor_FrontBumper" then
-        armorData.protectedParts["HeadlightLeft"] = vehicle:getPartById("HeadlightLeft"):getCondition()
-        armorData.protectedParts["HeadlightRight"] = vehicle:getPartById("HeadlightRight"):getCondition()
-    elseif id == "Armor_RearBumper" then
-        armorData.protectedParts["HeadlightRearLeft"] = vehicle:getPartById("HeadlightRearLeft"):getCondition()
-        armorData.protectedParts["HeadlightRearRight"] = vehicle:getPartById("HeadlightRearRight"):getCondition()
+    if not armorData.protectedParts then armorData.protectedParts = {} end
+    if armor.protectedParts then
+        for i = 1, #armor.protectedParts do
+            local prPart = vehicle:getPartById(armor.protectedParts[i])
+            armorData.protectedParts[armor.protectedParts[i]] = prPart and prPart:getCondition()
+        end
     end
 
     part:getModData().armorData = armorData

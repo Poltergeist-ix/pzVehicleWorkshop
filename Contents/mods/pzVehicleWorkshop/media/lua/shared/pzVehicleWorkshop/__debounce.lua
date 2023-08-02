@@ -1,7 +1,6 @@
 --[[
 -- local lastTick = 0 ---can be used in framework for performance instead of os.time
 --pending[i]:next() --need mt
-pzVehicleWorkshop.Util = pzVehicleWorkshop.Util or {}
 check if has new args?
 
 ]]

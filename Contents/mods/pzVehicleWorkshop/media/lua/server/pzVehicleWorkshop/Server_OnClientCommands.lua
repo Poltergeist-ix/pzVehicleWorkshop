@@ -32,7 +32,7 @@ end
 function OnClientCommands.pzVehicleWorkshop.doorAnim(player,args)
     local vehicle = getVehicleById(args.vehicleId)
     if not vehicle then return end
-    pzVehicleWorkshop.VehicleUtilities.DoorAnimOnServer(vehicle,vehicle:getPartById(args.partId),player,args.open)
+    VehicleUtil.DoorAnimOnServer(vehicle,vehicle:getPartById(args.partId),player,args.open)
 end
 
 function OnClientCommands.pzVehicleWorkshop.OnEnterVehicle(player,args)

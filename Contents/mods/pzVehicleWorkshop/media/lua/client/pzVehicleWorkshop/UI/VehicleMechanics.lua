@@ -95,7 +95,7 @@ function VehicleMechanics.doPartContextMenuHook(vehicleSettings, self, part, x, 
                     item:getModData().unmountCarPart = part
                     local valid = RecipeManager.IsRecipeValid(recipe, player, item, containers) or ISVehicleMechanics.cheat
 
-                    local option = context:addOption(getText("IGUI_Uninstall") .. " " .. partText, player, ArmoredVanillaVehicles.onRemoveArmor, self.vehicle, part, item, recipe, containers) --text
+                    local option = context:addOption(getText("IGUI_Uninstall") .. " " .. partText, player, pzVehicleWorkshop.ActionUtil.onUnmountArmor, self.vehicle, part, item, recipe, containers) --text
                     if not valid then
                         option.notAvailable = true
                     end
@@ -159,7 +159,7 @@ function VehicleMechanics.doPartContextMenuHook(vehicleSettings, self, part, x, 
                     item:getModData().vehicleObj = self.vehicle
                     local valid = RecipeManager.IsRecipeValid(recipe, player, item, containers) or ISVehicleMechanics.cheat
 
-                    local option = context:addOption(getText("IGUI_Install") .. " " .. partText, player, ArmoredVanillaVehicles.onAddArmor, self.vehicle, part, item, recipe, containers) --text
+                    local option = context:addOption(getText("IGUI_Install") .. " " .. partText, player, pzVehicleWorkshop.ActionUtil.onUnmountArmor, self.vehicle, part, item, recipe, containers) --text
                     if not valid then
                         option.notAvailable = true
                     end

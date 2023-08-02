@@ -7,19 +7,19 @@ pzVehicleWorkshop.ServerPatches = pzVehicleWorkshop.ServerPatches or {}
 
 pzVehicleWorkshop.ServerPatches["Vehicles.InstallComplete.Default"] = function()
     local original = Vehicles.InstallComplete.Default
-    local hook = pzVehicleWorkshop.VehicleUtilities.InstallComplete.DefaultHook
+    local hook = PZVW_Script.InstallComplete.DefaultHook
     Vehicles.InstallComplete.Default = function(...) original(...); hook(...) end
 end
 
 pzVehicleWorkshop.ServerPatches["Vehicles.UninstallTest.Default"] = function()
     local original = Vehicles.UninstallTest.Default
-    local hook = pzVehicleWorkshop.VehicleUtilities.UninstallTest.DefaultHook
+    local hook = PZVW_Script.UninstallTest.DefaultHook
     Vehicles.UninstallTest.Default = function(...) return original(...) and hook(...) end
 end
 
 pzVehicleWorkshop.ServerPatches["Vehicles.UninstallComplete.Default"] = function()
     local original = Vehicles.UninstallComplete.Default
-    local hook = pzVehicleWorkshop.VehicleUtilities.UninstallComplete.DefaultHook
+    local hook = PZVW_Script.UninstallComplete.DefaultHook
     Vehicles.UninstallComplete.Default = function(...) original(...); hook(...) end
 end
 

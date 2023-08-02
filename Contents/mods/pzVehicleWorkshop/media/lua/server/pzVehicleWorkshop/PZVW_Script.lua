@@ -7,6 +7,7 @@ PZVW_Script = {}
 PZVW_Script.Create = {}
 
 ---called when part is initialised after creation and when vehicle is loaded
+---BaseVehicle.InitParts (BaseVehicle.createPhysics), Part.repair
 PZVW_Script.Init = {}
 
 --- called when part is updated on Server

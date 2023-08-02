@@ -24,3 +24,11 @@ remove a value from table
 `x = ,` 
 
 when you use getTable("mytable") you get a copy of the table
+
+## Used Variables
+
+- table install
+    - blocksUninstall
+- table armor || Used to initialize armor data
+    - protectedParts
+    - maxArmorProtection

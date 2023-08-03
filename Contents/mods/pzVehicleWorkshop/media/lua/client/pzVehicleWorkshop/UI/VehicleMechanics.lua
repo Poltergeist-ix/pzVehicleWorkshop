@@ -1,5 +1,6 @@
 require "pzVehicleWorkshop/UI/UI"
 local pzVehicleWorkshop = pzVehicleWorkshop
+local Util = require "pzVehicleWorkshop/Util"
 local VehicleUtil = require "pzVehicleWorkshop/VehicleUtil"
 
 -----------------------------------------------------------------------------------------
@@ -71,8 +72,8 @@ end
 function VehicleMechanics.doPartContextMenuHook(vehicleSettings, self, part, x, y)
     local context = self.context
     if part:getInventoryItem() ~= nil then
-        local unmount = part:getTable("unmountRecipes")
-        if unmount ~= nil then
+        if part:getTable("unmountRecipes") ~= nil then
+            local unmount = part:getTable("unmountRecipes")
             local player = self.playerObj
             local playerInv = player:getInventory()
             local containers = ISInventoryPaneContextMenu.getContainers(player)
@@ -136,8 +137,8 @@ function VehicleMechanics.doPartContextMenuHook(vehicleSettings, self, part, x, 
                 end
             end
         end
-        local mount = part:getTable("mountRecipes")
-        if mount ~= nil then
+        if part:getTable("mountRecipes") ~= nil then
+            local mount = part:getTable("mountRecipes")
             local player = self.playerObj
             local playerInv = player:getInventory()
             local containers = ISInventoryPaneContextMenu.getContainers(player)
@@ -190,10 +191,11 @@ function VehicleMechanics.doMenuTooltipHook(self, part, option, lua, name)
             local blockPart = vehicle:getPartById(blockParts[i])
             if blockPart ~= nil and blockPart:getInventoryItem() ~= nil then
                 tooltip.description = tooltip.description .. " <LINE> " .. ISVehicleMechanics.bhs .. " " .. getText("Tooltip_vehicle_requireUnistalled", getText("IGUI_VehiclePart" .. blockParts[i]))
-                -- option.notAvailable = true
             end
         end
     end
+    local _table = part:getTable(lua)
+    if _table ~= nil and _table.testTooltip ~= nil then Util.callLua(_table.testTooltip, vehicle, part, self, tooltip) end
 end
 
 Events.OnVehicleMechanicsDoMenuTooltip.Add(VehicleMechanics.doMenuTooltipHook)

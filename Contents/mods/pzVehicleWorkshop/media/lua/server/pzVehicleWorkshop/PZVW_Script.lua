@@ -216,6 +216,12 @@ function PZVW_Script.UninstallTest.Container(vehicle,part,character)
     return (ISVehicleMechanics.cheat or part:getItemContainer():isEmpty()) and Vehicles.UninstallTest.Default(vehicle,part,character)
 end
 
+function PZVW_Script.UninstallTest.ContainerTooltip(vehicle,part,ui,tooltip)
+    if not part:getItemContainer():isEmpty() then
+        tooltip.description = tooltip.description .. " <LINE> " .. ISVehicleMechanics.bhs .. " " .. getText("Tooltip_vehicle_needempty", getText("IGUI_VehiclePart" .. part:getId()))
+    end
+end
+
 function PZVW_Script.UninstallTest.childrenRemoved(vehicle,part,character)
     for i=0,part:getChildCount()-1 do
         if part:getChild(i):getInventoryItem() ~= nil then return false end

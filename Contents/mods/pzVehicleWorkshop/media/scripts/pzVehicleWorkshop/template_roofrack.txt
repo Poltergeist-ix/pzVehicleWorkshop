@@ -38,6 +38,7 @@ module PZVW {
                 time = 120,
                 recipes = ,
                 test = PZVW_Script.UninstallTest.Container,
+                testTooltip = PZVW_Script.UninstallTest.ContainerTooltip,
                 complete = PZVW_Script.UninstallComplete.Default,
             }
         }

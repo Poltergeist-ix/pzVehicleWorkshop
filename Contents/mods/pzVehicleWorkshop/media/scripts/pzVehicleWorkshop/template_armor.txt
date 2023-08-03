@@ -1,0 +1,143 @@
+module PZVW {
+
+    template vehicle ArmorParts {
+
+        part Armor_EngineDoor {
+            area = Engine,
+            category = nodisplay,
+            table install { requireInstalled = EngineDoor, blocksUninstall = EngineDoor, }
+            table armor { protectedParts { 1 = EngineDoor, } }
+        }
+        part Armor_TrunkDoor {
+            area = TruckBed,
+            category = nodisplay,
+            table install { requireInstalled = TrunkDoor, blocksUninstall = TrunkDoor, }
+            table armor { protectedParts { 1 = TrunkDoor, 2 = TruckBed, } }
+        }
+        part Armor_Windshield {
+            area = Engine,
+            category = nodisplay,
+            table install { requireInstalled = Windshield, blocksUninstall = Windshield, }
+            table armor { protectedParts { 1 = Windshield, } }
+        }
+        part Armor_WindshieldRear {
+            area = TruckBed,
+            category = nodisplay,
+            table install { requireInstalled = WindshieldRear, blocksUninstall = WindshieldRear, }
+            table armor { protectedParts { 1 = WindshieldRear, } }
+        }
+        part Armor_WindowFrontLeft {
+            area = SeatFrontLeft,
+            category = nodisplay,
+            table install { requireInstalled = WindowFrontLeft, blocksUninstall = WindowFrontLeft, }
+            table armor { protectedParts { 1 = WindowFrontLeft, } }
+        }
+        part Armor_WindowFrontRight {
+            area = SeatFrontRight,
+            category = nodisplay,
+            table install { requireInstalled = WindowFrontRight, blocksUninstall = WindowFrontRight, }
+            table armor { protectedParts { 1 = WindowFrontRight, } }
+        }
+        part Armor_WindowRearLeft {
+            area = SeatRearLeft,
+            category = nodisplay,
+            table install { requireInstalled = WindowRearLeft, blocksUninstall = WindowRearLeft, }
+            table armor { protectedParts { 1 = WindowRearLeft, } }
+        }
+        part Armor_WindowRearRight {
+            area = SeatRearRight,
+            category = nodisplay,
+            table install { requireInstalled = WindowRearRight, blocksUninstall = WindowRearRight, }
+            table armor { protectedParts { 1 = WindowRearRight, } }
+        }
+        part Armor_DoorFrontLeft {
+            area = SeatFrontLeft,
+            category = nodisplay,
+            table install { requireInstalled = DoorFrontLeft, blocksUninstall = DoorFrontLeft, }
+            table armor { protectedParts { 1 = DoorFrontLeft, } }
+        }
+        part Armor_DoorFrontRight {
+            area = SeatFrontRight,
+            category = nodisplay,
+            table install { requireInstalled = DoorFrontRight, blocksUninstall = DoorFrontRight, }
+            table armor { protectedParts { 1 = DoorFrontRight, } }
+        }
+        part Armor_DoorRearLeft {
+            area = SeatRearLeft,
+            category = nodisplay,
+            table install { requireInstalled = DoorRearLeft, blocksUninstall = DoorRearLeft, }
+            table armor { protectedParts { 1 = DoorRearLeft, } }
+        }
+        part Armor_DoorRearRight {
+            area = SeatRearRight,
+            category = nodisplay,
+            table install { requireInstalled = DoorRearRight, blocksUninstall = DoorRearRight, }
+            table armor { protectedParts { 1 = DoorRearRight, } }
+        }
+
+        part Armor_FrontBumper {
+            area = Engine,
+            category = bodywork,
+            table armor { protectedParts { 1 = HeadlightLeft, 2 = HeadlightRight, } }
+        }
+        part Armor_RearBumper {
+            area = TruckBed,
+            category = bodywork,
+            table armor { protectedParts { 1 = HeadlightRearLeft, 2 = HeadlightRearRight, } }
+        }
+        part Armor_WheelFrontLeft {
+            area = TireFrontLeft,
+            category = bodywork,
+        }
+        part Armor_WheelFrontRight {
+            area = TireFrontRight,
+            category = bodywork,
+        }
+        part Armor_WheelRearLeft {
+            area = TireRearLeft,
+            category = bodywork,
+        }
+        part Armor_WheelRearRight {
+            area = TireRearRight,
+            category = bodywork,
+        }
+
+        part Armor* {
+            specificItem = false,
+            setAllModelsVisible = false,
+            lua {
+               create = PZVW_Script.Create.Empty,
+               init = PZVW_Script.Init.Models,
+               update = PZVW_Script.Update.Armor,
+            }
+            table armor { maxProtection = 1000, }
+        }
+
+    }
+
+    template vehicle InstallableArmor {
+        template = PZVW.ArmorParts,
+        part Armor* {
+            table install {
+                items {
+                    1 { type = Base.Wrench, count = 1, keep = true, equip = primary, }
+                }
+                time = 240,
+                recipes = ,
+                canBeCrafted = ,
+                test = Vehicles.InstallTest.Default,
+                complete = PZVW_Script.InstallComplete.Armor,
+            }
+            table uninstall {
+                items {
+                    1 { type = Base.Wrench, count = 1, keep = true, equip = primary, }
+                }
+                time = 168,
+                recipes = ,
+                test = Vehicles.UninstallTest.Default,
+                complete = PZVW_Script.UninstallComplete.Armor,
+            }
+        }
+    }
+
+}

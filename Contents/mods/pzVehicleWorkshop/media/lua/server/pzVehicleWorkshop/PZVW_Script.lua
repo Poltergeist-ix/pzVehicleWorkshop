@@ -1,30 +1,63 @@
 local pzVehicleWorkshop = pzVehicleWorkshop
 local VehicleUtil = require "pzVehicleWorkshop/VehicleUtil"
+pzVehicleWorkshop.ServerPatches = pzVehicleWorkshop.ServerPatches or {}
 
 PZVW_Script = {}
 
 ---called when part is created on server
+---
+---vehicle: BaseVehicle, part: VehiclePart
 PZVW_Script.Create = {}
 
 ---called when part is initialised after creation and when vehicle is loaded
 ---BaseVehicle.InitParts (BaseVehicle.createPhysics), Part.repair
+---
+---vehicle: BaseVehicle, part: VehiclePart
 PZVW_Script.Init = {}
 
 --- called when part is updated on Server
 --- needPartsUpdate() or isMechanicUIOpen() must return true to trigger update
+---
+---vehicle: BaseVehicle, part: VehiclePart, elapsedTime: double
 PZVW_Script.Update = {}
 
 ---called to test if part can be installed
+---
+---vehicle: BaseVehicle, part: VehiclePart, character: IsoGameCharacter
 PZVW_Script.InstallTest = {}
 
 ---called when part is installed
+---
+---vehicle: BaseVehicle, part: VehiclePart
 PZVW_Script.InstallComplete = {}
 
 ---called to test if part can be uninstalled
+---
+---vehicle: BaseVehicle, part: VehiclePart, character: IsoGameCharacter
 PZVW_Script.UninstallTest = {}
 
 ---called when part is uninstalled
+---
+---vehicle: BaseVehicle, part: VehiclePart, item: InventoryItem
 PZVW_Script.UninstallComplete = {}
+
+---called when checking all parts to see if the engine can work  
+---ISVehicleMechanics:checkEngineFull, ISVehicleDashboard:checkEngineFull, BaseVehicle.isEngineWorking
+---
+---vehicle: BaseVehicle, part: VehiclePart
+PZVW_Script.CheckEngine = {}
+
+---called when checking all parts to see if the vehicle can operate, (v.41.78 only used for tires, always returns true)  
+---BaseVehicle.isOperational
+---
+---vehicle: BaseVehicle, part: VehiclePart
+PZVW_Script.CheckOperate = {}
+
+---called when checking all parts to get usable part for interaction
+---BaseVehicle.isOperational
+---
+---vehicle: BaseVehicle, part: VehiclePart, character: IsoGameCharacter
+PZVW_Script.Use = {}
 
 ---called to check if container can be accessed by character, 
 ---set as test in part container script block
@@ -47,6 +80,13 @@ PZVW_Script.OnCreate = {}
 
 -----------------------------------------------------------------------------------------
 
+pzVehicleWorkshop.ServerPatches["Vehicles.Create.Engine"] = function()
+    local original = Vehicles.Create.Engine
+    Vehicles.Create.Engine = function(...)
+        return pzVehicleWorkshop.EventHandler.triggerOverride("OnCreateEngine",...) or original(...)
+    end
+end
+
 function PZVW_Script.Create.Empty(vehicle, part)
     part:setCondition(0)
 end
@@ -65,6 +105,18 @@ function PZVW_Script.Init.Container(vehicle,part)
 end
 
 -----------------------------------------------------------------------------------------
+
+pzVehicleWorkshop.ServerPatches["Vehicles.Update.Engine"] = function()
+    local original = Vehicles.Update.Engine
+    Vehicles.Update.Engine = function(vehicle,...)
+        original(vehicle,...)
+        if not vehicle:needPartsUpdate() then
+            for i = 1, vehicle:getMaxPassengers() - 1 do --skip 0 driver's seat
+                if vehicle:getCharacter(i) ~= nil then vehicle:setNeedPartsUpdate(true) break end
+            end
+        end
+    end
+end
 
 function PZVW_Script.Update.Armor(vehicle,part)
     if not part:getInventoryItem() then return end
@@ -110,15 +162,19 @@ end
 
 -----------------------------------------------------------------------------------------
 
-function PZVW_Script.InstallComplete.DefaultHook(vehicle,part)
-    if part:getTable("install").blocksUninstall ~= nil then
-        for _,blockedId in ipairs(part:getTable("install").blocksUninstall:split(";")) do
-            local blocked = vehicle:getPartById(blockedId)
-            if blocked ~= nil then
-                if not blocked:getModData().blockedUninstall then blocked:getModData().blockedUninstall = {part:getId()}
-                else table.insert(blocked:getModData().blockedUninstall,part:getId())
+pzVehicleWorkshop.ServerPatches["Vehicles.InstallComplete.Default"] = function()
+    local original = Vehicles.InstallComplete.Default
+    Vehicles.InstallComplete.Default = function(vehicle,part)
+        original(vehicle,part)
+        if part:getTable("install").blocksUninstall ~= nil then
+            for _,blockedId in ipairs(part:getTable("install").blocksUninstall:split(";")) do
+                local blocked = vehicle:getPartById(blockedId)
+                if blocked ~= nil then
+                    if not blocked:getModData().blockedUninstall then blocked:getModData().blockedUninstall = {part:getId()}
+                    else table.insert(blocked:getModData().blockedUninstall,part:getId())
+                    end
+                    vehicle:transmitPartModData(blocked)
                 end
-                vehicle:transmitPartModData(blocked)
             end
         end
     end
@@ -137,18 +193,23 @@ end
 
 -----------------------------------------------------------------------------------------
 
----called when Vehicles.UninstallTest.Default returns true
-function PZVW_Script.UninstallTest.DefaultHook(vehicle,part,character)
-    if part:getModData().blockedUninstall then
-        local blockParts = part:getModData().blockedUninstall
-        for i = #blockParts, 1, -1 do
-            local blockPart = vehicle:getPartById(blockParts[i])
-            if blockPart ~= nil and blockPart:getInventoryItem() ~= nil then return false
-            else table.remove(blockParts,i)
+pzVehicleWorkshop.ServerPatches["Vehicles.UninstallTest.Default"] = function()
+    local original = Vehicles.UninstallTest.Default
+    Vehicles.UninstallTest.Default = function(vehicle,part,...)
+        if not original(vehicle,part,...) then return false end
+        if part:getModData().blockedUninstall ~= nil then
+            local blockParts = part:getModData().blockedUninstall
+            for i = #blockParts, 1, -1 do
+                local blockPart = vehicle:getPartById(blockParts[i])
+                if blockPart ~= nil and blockPart:getInventoryItem() ~= nil then
+                    return false
+                else
+                    table.remove(blockParts,i)
+                end
             end
         end
+        return true
     end
-    return true
 end
 
 function PZVW_Script.UninstallTest.Container(vehicle,part,character)
@@ -164,15 +225,19 @@ end
 
 -----------------------------------------------------------------------------------------
 
-function PZVW_Script.UninstallComplete.DefaultHook(vehicle,part,item)
-    if part:getTable("install").blocksUninstall ~= nil then
-        for _,blockedId in ipairs(part:getTable("install").blocksUninstall:split(";")) do
-            local blocked = vehicle:getPartById(blockedId)
-            if blocked ~= nil and blocked:getModData().blockedUninstall ~= nil then
-                for i, v in ipairs(blocked:getModData().blockedUninstall) do
-                    if v == part:getId() then
-                        table.remove(blocked:getModData().blockedUninstall,i)
-                        break
+pzVehicleWorkshop.ServerPatches["Vehicles.UninstallComplete.Default"] = function()
+    local original = Vehicles.UninstallComplete.Default
+    Vehicles.UninstallComplete.Default = function(vehicle,part,...)
+        original(vehicle,part,...)
+        if part:getTable("install").blocksUninstall ~= nil then
+            for _,blockedId in ipairs(part:getTable("install").blocksUninstall:split(";")) do
+                local blocked = vehicle:getPartById(blockedId)
+                if blocked ~= nil and blocked:getModData().blockedUninstall ~= nil then
+                    for i, v in ipairs(blocked:getModData().blockedUninstall) do
+                        if v == part:getId() then
+                            table.remove(blocked:getModData().blockedUninstall,i)
+                            break
+                        end
                     end
                 end
             end

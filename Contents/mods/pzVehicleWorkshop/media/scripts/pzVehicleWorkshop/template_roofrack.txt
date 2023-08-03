@@ -1,0 +1,45 @@
+module PZVW {
+
+    template vehicle RoofRackParts {
+
+        part RoofRack {
+            area = RoofRack,
+            specificItem = false,
+            container {
+                capacity = 60,
+                conditionAffectsCapacity = true,
+                test = PZVW_Script.ContainerAccess.OutsideOpenContainer,
+            }
+            lua {
+                init = PZVW_Script.Init.Container,
+                AcceptItemFunction = PZVW_Script.AcceptItemFunction.RoofRack,
+                OnTransferItem = PZVW_Script.OnTransferItem.resetModels,
+            }
+        }
+
+    }
+
+    template vehicle InstallableRoofRack {
+        template = PZVW.RoofRackParts,
+        part RoofRack {
+            table install {
+                items {
+                    1 { type = Base.Wrench, count = 1, keep = true, equip = primary, }
+                }
+                time = 240,
+                recipes = ,
+                test = Vehicles.InstallTest.Default,
+                complete = PZVW_Script.InstallComplete.Default,
+            }
+            table uninstall {
+                items {
+                    1 { type = Base.Wrench, count = 1, keep = true, equip = primary, }
+                }
+                time = 120,
+                recipes = ,
+                test = PZVW_Script.UninstallTest.Container,
+                complete = PZVW_Script.UninstallComplete.Default,
+            }
+        }
+    }
+}

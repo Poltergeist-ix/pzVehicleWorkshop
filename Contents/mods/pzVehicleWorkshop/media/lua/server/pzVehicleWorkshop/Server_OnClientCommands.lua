@@ -3,6 +3,7 @@ if isClient() then return end
 local pzVehicleWorkshop = pzVehicleWorkshop
 local OnClientCommands = pzVehicleWorkshop.OnClientCommands or {}
 local wantNoise = getDebug()
+local Util = require "pzVehicleWorkshop/Util"
 local VehicleUtil = require "pzVehicleWorkshop/VehicleUtil"
 
 -----------------------------------------------------------------------------------------
@@ -41,13 +42,16 @@ function OnClientCommands.pzVehicleWorkshop.OnEnterVehicle(player,args)
     vehicle:setNeedPartsUpdate(true)
 end
 
-function OnClientCommands.pzVehicleWorkshop.resetModelsMul(player,args)
-    for vehicleId,v in pairs(args) do
+function OnClientCommands.pzVehicleWorkshop.checkDirtyContainers(player,args)
+    for vehicleId,t in pairs(args) do
         local vehicle = getVehicleById(vehicleId)
         if vehicle ~= nil then
-            for partId,_ in pairs(v) do
-                local part = vehicle:getPartById(partId)
-                VehicleUtil.resetPartModels(vehicle,part)
+            for i = 1, #t do
+                local part = vehicle:getPartById(t[i])
+                if part ~= nil and part:getItemContainer():isDirty() then
+                    part:getItemContainer():setDirty(false)
+                    VehicleUtil.resetPartModels(vehicle,part)
+                end
             end
         end
     end

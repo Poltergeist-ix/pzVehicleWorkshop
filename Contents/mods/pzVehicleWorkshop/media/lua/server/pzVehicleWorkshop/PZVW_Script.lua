@@ -66,12 +66,6 @@ PZVW_Script.ContainerAccess = {}
 ---called to test items before being added to container
 PZVW_Script.AcceptItemFunction = {}
 
----### Description:
----> called after a successful item transfer to / from a vehicle part container on client
----### Parameters:
----> part: VehiclePart, item: InventoryItem, isAdd: Boolean
-PZVW_Script.OnTransferItem = {}
-
 ---called by RecipeManager to check if player can perform the recipe
 PZVW_Script.OnCanPerform = {}
 
@@ -125,9 +119,9 @@ function PZVW_Script.Update.Armor(vehicle,part)
         VehicleUtil.initArmorData(vehicle,part)
         armorData = part:getModData().armorData
     end
-
+    
     local armorCondition = armorData.armorCondition - armorData.prevArmorCondition + part:getCondition()
-
+    
     for prId,prevCond in pairs(armorData.protectedParts) do
         local protectedPart = vehicle:getPartById(prId)
         local cond = protectedPart:getCondition()
@@ -144,7 +138,7 @@ function PZVW_Script.Update.Armor(vehicle,part)
         armorData.protectedParts[prId] = cond
         vehicle:transmitPartCondition(protectedPart)
     end
-
+    
     if armorCondition ~= armorData.armorCondition then
         local newCondition = armorCondition / armorData.armorConditionMax * 100
         if newCondition == 0 and not armorData.keepDestroyed then --fixme uninstall logic or unmount for armor
@@ -264,11 +258,40 @@ end
 
 -----------------------------------------------------------------------------------------
 
-function PZVW_Script.ContainerAccess.OutsideOpenContainer(vehicle, part, chr)
-	if chr:getVehicle() then return false end
-	if not vehicle:isInArea(part:getArea(), chr) then return false end
-    if not part:getInventoryItem() and part:getItemType() ~= nil and not part:getItemType():isEmpty() then return false end
-	return true
+do
+    local debouncedParts = {}
+
+    local function updatePartModels()
+        if isClient() then
+            local args = {}
+            for part,_ in pairs(debouncedParts) do
+                debouncedParts[part] = nil
+                local id = part:getVehicle():getId()
+                args[id] = args[id] or {}
+                table.insert(args[id],part:getId())
+            end
+            sendClientCommand("pzVehicleWorkshop","checkDirtyContainers",args)
+        else
+            for part,_ in pairs(debouncedParts) do
+                debouncedParts[part] = nil
+                VehicleUtil.resetPartModels(part:getVehicle(),part)
+            end
+        end
+    end
+
+    function PZVW_Script.ContainerAccess.OutsideOpenContainer(vehicle, part, chr)
+        if chr:getVehicle() then return false end
+        if not vehicle:isInArea(part:getArea(), chr) then return false end
+        if not part:getInventoryItem() and part:getItemType() ~= nil and not part:getItemType():isEmpty() then return false end
+        if part:getItemContainer():isDirty() then
+            part:getItemContainer():setDirty(false)
+            if part:getTable("containerModels") ~= nil then
+                debouncedParts[part] = true
+                pzVehicleWorkshop.Timing.debounce(3,updatePartModels) --GameClient itemSendFrequency 3s
+            end
+        end
+        return true
+    end
 end
 
 -----------------------------------------------------------------------------------------
@@ -285,27 +308,10 @@ end
 
 -----------------------------------------------------------------------------------------
 
-do
-    local pendingUpdate = {}
-    local function sendUpdate()
-        sendClientCommand("pzVehicleWorkshop","resetModelsMul",pendingUpdate)
-        pendingUpdate = {}
-    end
-
-    function PZVW_Script.OnTransferItem.resetModels(part,item,isAdd)
-        local id = part:getVehicle():getId()
-        pendingUpdate[id] = pendingUpdate[id] or {}
-        pendingUpdate[id][part:getId()] = true
-        pzVehicleWorkshop.Timing.debounce(0.5,sendUpdate)
-    end
-end
-
------------------------------------------------------------------------------------------
-
 function PZVW_Script.OnCanPerform.VehicleRecipe(recipe, player, item)
     local vehicle = item and item:getModData().vehicleObj
     if not vehicle then return false end
-
+    
     return player:getVehicle() == nil and vehicle:getSquare() ~= nil and player:DistTo(vehicle:getX(), vehicle:getY()) < 7
     --etc distance / vehicle:getSquare():getMovingObjects():indexOf(vehicle) < 0 -  / player:getUseableVehicle() == vehicle or player:getNearVehicle() == vehicle
 end
@@ -314,7 +320,7 @@ end
 
 function PZVW_Script.OnCreate.ArmorRecipe(items, result, player)
     local mod = player:getPerkLevel(Perks.Mechanics) + player:getPerkLevel(Perks.MetalWelding) - 5
-
+    
     result:setCondition(math.min(100,ZombRand(50+mod*2,101+mod*mod)))
 end
 

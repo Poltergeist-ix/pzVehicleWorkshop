@@ -34,6 +34,7 @@ local function setFieldValue(t,k,v)
     t = t.__index
     --t = getmetatable(t).__index -- if ref removed
     if not specialFields[k] or specialFields[k](t,k,v) then
+        --rawset(t,k,v)
         t[k] = v
     end
 end

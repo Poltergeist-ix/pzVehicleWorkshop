@@ -1,5 +1,6 @@
+# Vehicle Script
 
-## Modules
+## module use
 You can use different modules from "Base" for vehicle scripts but in some cases you will need to use the module + id within your files if you do that. 
 examples where you need to use module + id.
 when adding a template
@@ -11,7 +12,9 @@ when adding a model for part
 model name { file = module.model, }
 ```
 
-## Table Block
+# Part Script
+
+## table Block
 
 add a value, needs comma 
 `x = y,` 
@@ -24,6 +27,10 @@ remove a value from table
 `x = ,` 
 
 when you use getTable("mytable") you get a copy of the table
+
+## lua Block - luaFunctions
+
+makes a new HashMap every time, fully replacing any previous luaFunctions
 
 ## Used Variables
 

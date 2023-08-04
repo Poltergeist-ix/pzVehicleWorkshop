@@ -13,7 +13,6 @@ module PZVW {
             lua {
                 init = PZVW_Script.Init.Container,
                 AcceptItemFunction = PZVW_Script.AcceptItemFunction.RoofRack,
-                OnTransferItem = PZVW_Script.OnTransferItem.resetModels,
             }
         }
 

@@ -202,7 +202,7 @@ function VehicleMechanics.doMenuTooltipHook(self, part, option, lua, name)
         end
     end
     local _table = part:getTable(lua)
-    if _table ~= nil and _table.testTooltip ~= nil then Util.callLua(_table.testTooltip, vehicle, part, self, tooltip) end
+    if _table ~= nil and _table.testTooltip ~= nil then Util.callLua(_table.testTooltip, vehicle, part, self.character, tooltip) end
 end
 
 Events.OnVehicleMechanicsDoMenuTooltip.Add(VehicleMechanics.doMenuTooltipHook)

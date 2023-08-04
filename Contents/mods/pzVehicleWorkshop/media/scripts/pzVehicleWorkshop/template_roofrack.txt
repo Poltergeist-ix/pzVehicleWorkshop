@@ -26,6 +26,7 @@ module PZVW {
                     1 { type = Base.Wrench, count = 1, keep = true, equip = primary, }
                 }
                 time = 240,
+                skills = Mechanics:2,
                 recipes = ,
                 test = Vehicles.InstallTest.Default,
                 complete = PZVW_Script.InstallComplete.Default,
@@ -35,6 +36,7 @@ module PZVW {
                     1 { type = Base.Wrench, count = 1, keep = true, equip = primary, }
                 }
                 time = 120,
+                skills = Mechanics:1,
                 recipes = ,
                 test = PZVW_Script.UninstallTest.Container,
                 testTooltip = PZVW_Script.UninstallTest.ContainerTooltip,

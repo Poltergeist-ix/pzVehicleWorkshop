@@ -123,6 +123,7 @@ module PZVW {
                     1 { type = Base.Wrench, count = 1, keep = true, equip = primary, }
                 }
                 time = 240,
+                skills = Mechanics:2,
                 recipes = ,
                 canBeCrafted = ,
                 test = Vehicles.InstallTest.Default,
@@ -133,6 +134,7 @@ module PZVW {
                     1 { type = Base.Wrench, count = 1, keep = true, equip = primary, }
                 }
                 time = 168,
+                skills = Mechanics:1,
                 recipes = ,
                 test = Vehicles.UninstallTest.Default,
                 complete = PZVW_Script.UninstallComplete.Armor,

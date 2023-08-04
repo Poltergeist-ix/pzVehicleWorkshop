@@ -82,7 +82,7 @@ function VehicleMechanics.doPartContextMenu_CraftInstall(vehicleSettings, self, 
                 if not (RecipeManager.IsRecipeValid(recipe, self.playerObj, nil, containers) or ISVehicleMechanics.cheat) then
                     option.notAvailable = true
                 end
-                option.toolTip = ISRecipeTooltip.addToolTip()
+                option.toolTip = pzVehicleWorkshop.UI.VehicleCraftTooltip:new()
                 option.toolTip.character = self.playerObj
                 option.toolTip.recipe = recipe
                 option.toolTip:setName(recipe:getName())
@@ -125,10 +125,11 @@ function VehicleMechanics.doPartContextMenu_Mount(vehicleSettings, self, part, x
                     if not valid then
                         option.notAvailable = true
                     end
-                    local tooltip = ISRecipeTooltip.addToolTip()
+                    local tooltip = pzVehicleWorkshop.UI.VehicleCraftTooltip:new()
                     tooltip.character = player
                     tooltip.recipe = recipe
                     tooltip:setName(recipe:getName())
+                    tooltip.removeCarKey = true
                     --if resultItem:getTexture() and resultItem:getTexture():getName() ~= "Question_On" then
                     --    tooltip:setTexture(resultItem:getTexture():getName())
                     --end
@@ -171,10 +172,11 @@ function VehicleMechanics.doPartContextMenu_Mount(vehicleSettings, self, part, x
                     if not valid then
                         option.notAvailable = true
                     end
-                    local tooltip = ISRecipeTooltip.addToolTip()
+                    local tooltip = pzVehicleWorkshop.UI.VehicleCraftTooltip:new()
                     tooltip.character = player
                     tooltip.recipe = recipe
                     tooltip:setName(recipe:getName())
+                    tooltip.removeCarKey = true
                     --if resultItem:getTexture() and resultItem:getTexture():getName() ~= "Question_On" then
                     --    tooltip:setTexture(resultItem:getTexture():getName())
                     --end

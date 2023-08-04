@@ -29,7 +29,7 @@ module PZVW {
                 skills = Mechanics:2,
                 recipes = ,
                 test = Vehicles.InstallTest.Default,
-                complete = PZVW_Script.InstallComplete.Default,
+                complete = PZVW_Script.InstallComplete.Basic,
             }
             table uninstall {
                 items {

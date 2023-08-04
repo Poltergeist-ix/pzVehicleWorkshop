@@ -156,32 +156,24 @@ end
 
 -----------------------------------------------------------------------------------------
 
-pzVehicleWorkshop.ServerPatches["Vehicles.InstallComplete.Default"] = function()
-    local original = Vehicles.InstallComplete.Default
-    Vehicles.InstallComplete.Default = function(vehicle,part)
-        original(vehicle,part)
-        if part:getTable("install").blocksUninstall ~= nil then
-            for _,blockedId in ipairs(part:getTable("install").blocksUninstall:split(";")) do
-                local blocked = vehicle:getPartById(blockedId)
-                if blocked ~= nil then
-                    if not blocked:getModData().blockedUninstall then blocked:getModData().blockedUninstall = {part:getId()}
-                    else table.insert(blocked:getModData().blockedUninstall,part:getId())
-                    end
-                    vehicle:transmitPartModData(blocked)
+function PZVW_Script.InstallComplete.Basic(vehicle,part)
+    Vehicles.InstallComplete.Default(vehicle,part)
+    if part:getTable("install").blocksUninstall ~= nil then
+        for _,blockedId in ipairs(part:getTable("install").blocksUninstall:split(";")) do
+            local blocked = vehicle:getPartById(blockedId)
+            if blocked ~= nil then
+                if not blocked:getModData().blockedUninstall then blocked:getModData().blockedUninstall = {part:getId()}
+                else table.insert(blocked:getModData().blockedUninstall,part:getId())
                 end
+                vehicle:transmitPartModData(blocked)
             end
         end
     end
-end
-
-function PZVW_Script.InstallComplete.Default(vehicle,part)
-    Vehicles.InstallComplete.Default(vehicle,part)
     VehicleUtil.resetPartModels(vehicle,part)
 end
 
 function PZVW_Script.InstallComplete.Armor(vehicle,part)
-    Vehicles.InstallComplete.Default(vehicle,part)
-    VehicleUtil.resetPartModels(vehicle,part)
+    PZVW_Script.InstallComplete.Basic(vehicle,part)
     VehicleUtil.initArmorData(vehicle,part)
 end
 

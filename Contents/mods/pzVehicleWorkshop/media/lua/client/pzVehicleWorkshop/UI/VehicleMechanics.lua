@@ -68,11 +68,36 @@ function VehicleMechanics.AltDrawItems(vehicleSettings, window, y, item, alt)
     return VehicleMechanics.drawArmorItems(vehicleSettings, window, y, item, alt)
 end
 
----TODO add to event
-function VehicleMechanics.doPartContextMenuHook(vehicleSettings, self, part, x, y)
+function VehicleMechanics.doPartContextMenu_CraftInstall(vehicleSettings, self, part, x, y)
+    if part:getInventoryItem() == nil and part:getTable("install") and part:getTable("install").canBeCrafted then
+        local containers = ISInventoryPaneContextMenu.getContainers(self.playerObj)
+        local partText = getText("IGUI_VehiclePart" .. part:getId())
+
+        local itemTypes = part:getItemType()
+        for i = 0, itemTypes:size() - 1 do
+            local itemType = itemTypes:get(i)
+            local recipe = getScriptManager():getRecipe(itemType.." Craft")
+            if recipe ~= nil then
+                local option = self.context:addOption(getText("IGUI_CraftUI_CraftOne") .. " " .. partText, self.playerObj, pzVehicleWorkshop.ActionUtil.onCraftAndInstallPart, self.vehicle, part, itemType, recipe)
+                if not (RecipeManager.IsRecipeValid(recipe, self.playerObj, nil, containers) or ISVehicleMechanics.cheat) then
+                    option.notAvailable = true
+                end
+                option.toolTip = ISRecipeTooltip.addToolTip()
+                option.toolTip.character = self.playerObj
+                option.toolTip.recipe = recipe
+                option.toolTip:setName(recipe:getName())
+            end
+        end
+    end
+end
+
+function VehicleMechanics.doPartContextMenu_Mount(vehicleSettings, self, part, x, y)
     local context = self.context
+
     if part:getInventoryItem() ~= nil then
         if part:getTable("unmountRecipes") ~= nil then
+            context:removeOptionByName(getText("IGUI_Uninstall"))
+
             local unmount = part:getTable("unmountRecipes")
             local player = self.playerObj
             local playerInv = player:getInventory()
@@ -117,27 +142,9 @@ function VehicleMechanics.doPartContextMenuHook(vehicleSettings, self, part, x, 
             end
         end
     else
-        if part:getTable("install") and part:getTable("install").canBeCrafted then
-            local containers = ISInventoryPaneContextMenu.getContainers(self.playerObj)
-            local partText = getText("IGUI_VehiclePart" .. part:getId())
-
-            local itemTypes = part:getItemType()
-            for i = 0, itemTypes:size() - 1 do
-                local itemType = itemTypes:get(i)
-                local recipe = getScriptManager():getRecipe(itemType.." Craft")
-                if recipe ~= nil then
-                    local option = context:addOption(getText("IGUI_CraftUI_CraftOne") .. " " .. partText, self.playerObj, pzVehicleWorkshop.ActionUtil.onCraftAndInstallPart, self.vehicle, part, itemType, recipe)
-                    if not (RecipeManager.IsRecipeValid(recipe, self.playerObj, nil, containers) or ISVehicleMechanics.cheat) then
-                        option.notAvailable = true
-                    end
-                    option.toolTip = ISRecipeTooltip.addToolTip()
-                    option.toolTip.character = self.playerObj
-                    option.toolTip.recipe = recipe
-                    option.toolTip:setName(recipe:getName())
-                end
-            end
-        end
         if part:getTable("mountRecipes") ~= nil then
+            context:removeOptionByName(getText("IGUI_Install"))
+
             local mount = part:getTable("mountRecipes")
             local player = self.playerObj
             local playerInv = player:getInventory()
@@ -160,7 +167,7 @@ function VehicleMechanics.doPartContextMenuHook(vehicleSettings, self, part, x, 
                     item:getModData().vehicleObj = self.vehicle
                     local valid = RecipeManager.IsRecipeValid(recipe, player, item, containers) or ISVehicleMechanics.cheat
 
-                    local option = context:addOption(getText("IGUI_Install") .. " " .. partText, player, pzVehicleWorkshop.ActionUtil.onUnmountArmor, self.vehicle, part, item, recipe, containers) --text
+                    local option = context:addOption(getText("IGUI_Install") .. " " .. partText, player, pzVehicleWorkshop.ActionUtil.onMountArmor, self.vehicle, part, item, recipe, containers) --text
                     if not valid then
                         option.notAvailable = true
                     end

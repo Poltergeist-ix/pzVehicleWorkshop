@@ -1,7 +1,7 @@
 IGUI_EN = {
 
-    IGUI_VehiclePartArmor_FrontBumper = "Bumper Armor",
-    IGUI_VehiclePartArmor_RearBumper = "Rear Bumper Armor",
+    IGUI_VehiclePartArmor_BumperFront = "Bumper Armor",
+    IGUI_VehiclePartArmor_BumperRear = "Rear Bumper Armor",
     IGUI_VehiclePartArmor_EngineDoor = "Hood Armor",
     IGUI_VehiclePartArmor_TrunkDoor = "Trunk Lid Armor",
     IGUI_VehiclePartArmor_Windshield = "Windshield Armor",

@@ -2,12 +2,12 @@ module PZVW {
 
     template vehicle ArmorParts {
 
-        part Armor_FrontBumper {
+        part Armor_BumperFront {
             area = Engine,
             category = bodywork,
             table armor { protectedParts { 1 = HeadlightLeft, 2 = HeadlightRight, } }
         }
-        part Armor_RearBumper {
+        part Armor_BumperRear {
             area = TruckBed,
             category = bodywork,
             table armor { protectedParts { 1 = HeadlightRearLeft, 2 = HeadlightRearRight, } }

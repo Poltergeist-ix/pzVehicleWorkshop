@@ -78,14 +78,13 @@ function VehicleMechanics.doPartContextMenu_CraftInstall(vehicleSettings, self, 
             local itemType = itemTypes:get(i)
             local recipe = getScriptManager():getRecipe(itemType.." Craft")
             if recipe ~= nil then
-                local option = self.context:addOption(getText("IGUI_CraftUI_CraftOne") .. " " .. partText, self.playerObj, pzVehicleWorkshop.ActionUtil.onCraftAndInstallPart, self.vehicle, part, itemType, recipe)
+                local option = self.context:addOption(recipe:getName(), self.playerObj, pzVehicleWorkshop.ActionUtil.onCraftAndInstallPart, self.vehicle, part, itemType, recipe)
                 if not (RecipeManager.IsRecipeValid(recipe, self.playerObj, nil, containers) or ISVehicleMechanics.cheat) then
                     option.notAvailable = true
                 end
                 option.toolTip = pzVehicleWorkshop.UI.VehicleCraftTooltip:new()
                 option.toolTip.character = self.playerObj
                 option.toolTip.recipe = recipe
-                option.toolTip:setName(recipe:getName())
             end
         end
     end

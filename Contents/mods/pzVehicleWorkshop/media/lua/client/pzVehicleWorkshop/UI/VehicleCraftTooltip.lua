@@ -58,7 +58,7 @@ function Tooltip:layoutContents(x, y)
         y1 = y1 + lineHeight
     end
 
-    self.contentsHeight = y1 - lineHeight
+    self.contentsHeight = y1 - y
 
     return self.contentsWidth, self.contentsHeight
 end

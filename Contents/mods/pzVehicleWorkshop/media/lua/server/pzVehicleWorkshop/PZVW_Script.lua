@@ -9,13 +9,14 @@ PZVW_Script = {}
 ---vehicle: BaseVehicle, part: VehiclePart
 PZVW_Script.Create = {}
 
----called when part is initialised after creation and when vehicle is loaded
+---called after creation, when loaded and repaired
 ---BaseVehicle.InitParts (BaseVehicle.createPhysics), Part.repair
 ---
 ---vehicle: BaseVehicle, part: VehiclePart
 PZVW_Script.Init = {}
 
 --- called when part is updated on Server
+---
 --- needPartsUpdate() or isMechanicUIOpen() must return true to trigger update
 ---
 ---vehicle: BaseVehicle, part: VehiclePart, elapsedTime: double
@@ -41,13 +42,15 @@ PZVW_Script.UninstallTest = {}
 ---vehicle: BaseVehicle, part: VehiclePart, item: InventoryItem
 PZVW_Script.UninstallComplete = {}
 
----called when checking all parts to see if the engine can work  
+---called when checking all parts to see if the engine can work
+---
 ---ISVehicleMechanics:checkEngineFull, ISVehicleDashboard:checkEngineFull, BaseVehicle.isEngineWorking
 ---
 ---vehicle: BaseVehicle, part: VehiclePart
 PZVW_Script.CheckEngine = {}
 
----called when checking all parts to see if the vehicle can operate, (v.41.78 only used for tires, always returns true)  
+---called when checking all parts to see if the vehicle can operate, (v.41.78 only used for tires, always returns true)
+---
 ---BaseVehicle.isOperational
 ---
 ---vehicle: BaseVehicle, part: VehiclePart

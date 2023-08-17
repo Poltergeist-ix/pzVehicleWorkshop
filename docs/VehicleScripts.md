@@ -13,10 +13,8 @@ Vector3f in script example:
 offset = 0 1.2 0.4321,
 ```
 
-`template! = ,` is used to load a full template, it doesn't support partial load like `template = template/part/part,`
-template parts replace existing parts with template part copies when loaded, they are not additive (v.41.78)
-
-part and passenger blocks can use the wildcard `*` to target previously loaded blocks
+The `*` wildcard can be used for part and passenger blocks to target previously loaded blocks. It can be used by itself `part * {}`, in the start `part *Left {}` or the end `part Door* {}`. 
+It supports more advanced matching as well. When an id contains `*`, all previously added parts are checked for a match to a pattern.
 
 # Part Script
 
@@ -198,6 +196,80 @@ window { openable = true, }
 | key | Type | brief |
 | --- | --- | --- |
 | openable | Boolean | describes if window can be opened |
+
+# Template Vehicle
+
+The vehicle templates are used as scripts that can be added to other template vehicles or the vehicle scripts. They use the same syntax as the vehicle scripts.
+
+Create a vehicle template:
+```
+template vehicle templateId {...}
+```
+
+Copy all areas, parts, passengers and wheels from the template:
+```
+template = templateId,
+```
+
+Copy a specific part from the template:
+```
+template = template/part/partId,
+```
+
+Parse the body of the template to the script:
+```
+template! = templateId,
+```
+
+> when templates add a part that exists, they fully replace it while keeping same index, they are not additive (v.41.78).
+
+## Example 1: add parts from template
+
+```
+template = Tire,
+```
+> copies all tires from the Tire template
+
+```
+template = GloveBox,
+part GloveBox
+{
+    container
+    {
+        capacity = 5,
+    }
+}
+```
+> adds the GloveBox template, then changes the Glovebox container capacity
+
+## Example 2: change all added by loading template with *
+
+```
+template vehicle PassengerCommon
+{
+    passenger * { ... }
+}
+
+template vehicle PassengerSeat6
+{
+    template = PassengerSeat4/passenger/FrontLeft,
+    template = PassengerSeat4/passenger/FrontRight,
+    ...
+    template! = PassengerCommon,
+}
+```
+> We create a template that only has a `passenger *` and then load it after we create the passengers we need. This loads the body of the template and the `passenger *` applies to all passengers that we added.
+
+## Example 3: add vehicle values from template
+
+```
+vehicle CarLights
+{
+    template! = CarLights,
+    ...
+}
+```
+> creates the CarLights vehicle script and loads the CarLights template's body with all it's values.
 
 # Model Scripts
 

@@ -172,7 +172,8 @@ table uninstall {
 }
 ```
 
-> requireUninstalled can not have multiple values (v.41.78)  
+>   - requireUninstalled can not have multiple values (v.41.78)
+>   - items only use `keep = true`, support for removing items is minimal if any
 
 **Custom**
 - table install

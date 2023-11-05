@@ -44,6 +44,7 @@ end
 
 Menu.Patches = {}
 
+--- getVehicleToInteractWith searches for vehicles around player, best to cache the result
 function Menu.Patches.getVehicleToInteractWith(getVehicleToInteractWith)
     return function(playerObj)
         Menu.interactVehicle = getVehicleToInteractWith(playerObj)
@@ -53,21 +54,16 @@ end
 
 function Menu.Patches.showRadialMenu(showRadialMenu)
     return function(playerObj)
-
-        --print("is visible 1 ",getPlayerRadialMenu(playerObj:getPlayerNum()):isReallyVisible())
-
+        Menu.interactVehicle = nil
         showRadialMenu(playerObj)
 
         if isGamePaused() then return end
         local menu = getPlayerRadialMenu(playerObj:getPlayerNum())
         if menu:isReallyVisible() then return end -- TODO: test undisplay effect
 
-        --print("is visible 2 ",getPlayerRadialMenu(playerObj:getPlayerNum()):isReallyVisible())
-
-        local vehicle = playerObj:getVehicle()
-        if vehicle ~= nil then
-            pzVehicleWorkshop.EventHandler.triggerEvent("OnShowVehicleRadial", vehicle, playerObj, menu)
-        else
+        if playerObj:getVehicle() ~= nil then
+            pzVehicleWorkshop.EventHandler.triggerEvent("OnShowVehicleRadial", playerObj:getVehicle(), playerObj, menu)
+        elseif Menu.interactVehicle ~= nil then
             pzVehicleWorkshop.EventHandler.triggerEvent("OnShowVehicleRadialOutside", Menu.interactVehicle, playerObj, menu)
         end
     end

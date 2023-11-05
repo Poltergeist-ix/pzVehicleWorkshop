@@ -12,6 +12,18 @@ module PZVW {
             category = bodywork,
             table armor { protectedParts { 1 = HeadlightRearLeft, 2 = HeadlightRearRight, } }
         }
+        /* to be removed */
+        part Armor_FrontBumper {
+            area = Engine,
+            category = bodywork,
+            table armor { protectedParts { 1 = HeadlightLeft, 2 = HeadlightRight, } }
+        }
+        /* to be removed */
+        part Armor_RearBumper {
+            area = TruckBed,
+            category = bodywork,
+            table armor { protectedParts { 1 = HeadlightRearLeft, 2 = HeadlightRearRight, } }
+        }
         part Armor_EngineDoor {
             area = Engine,
             category = nodisplay,

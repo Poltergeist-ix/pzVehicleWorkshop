@@ -1,0 +1,27 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Konijima/project-zomboid-studio/master/pzstudio.schema.json",
+    "title": "Vehicle Workshop",
+    "authors": [
+        "Poltergeist"
+    ],
+    "workshop": {
+        "id": 2964179034,
+        "visibility": "public",
+        "tags": [
+            "Build 41",
+            "Framework",
+            "Vehicles"
+        ],
+        "excludes": []
+    },
+    "mods": {
+        "pzVehicleWorkshop": {
+            "name": "Vehicle Workshop",
+            "description": "This mod adds events, functions and patches vanilla functions to make it easier to add vehicle mods.",
+            "poster": [
+                "poster.png"
+            ],
+            "icon": "icon.png"
+        }
+    }
+}

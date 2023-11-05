@@ -1,0 +1,4 @@
+Tooltip_ES = {
+	Tooltip_Recipe_Known = "Se conoce la receta",
+	Tooltip_Recipe_NotKnown = "No se conoce la receta",
+}

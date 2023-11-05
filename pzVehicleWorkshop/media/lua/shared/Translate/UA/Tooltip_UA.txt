@@ -1,0 +1,4 @@
+Tooltip_UA = {
+	Tooltip_Recipe_Known = "Рецепт відомий",
+	Tooltip_Recipe_NotKnown = "Рецепт не відомий",
+}

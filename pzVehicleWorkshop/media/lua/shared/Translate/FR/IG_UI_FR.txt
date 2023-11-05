@@ -1,0 +1,28 @@
+IGUI_FR = {
+
+    IGUI_VehiclePartArmor_BumperFront = "Armure pare-chocs",
+    IGUI_VehiclePartArmor_BumperRear = "Armure de pare-chocs arrière",
+    IGUI_VehiclePartArmor_EngineDoor = "Armure de capuche",
+    IGUI_VehiclePartArmor_TrunkDoor = "Armure de couvercle de coffre",
+    IGUI_VehiclePartArmor_Windshield = "Armure de pare-brise",
+    IGUI_VehiclePartArmor_WindshieldRear = "Armure de pare-brise arrière",
+    IGUI_VehiclePartArmor_WindowFrontLeft = "Armure de fenêtre avant gauche",
+    IGUI_VehiclePartArmor_WindowFrontRight = "Armure de fenêtre avant droite",
+    IGUI_VehiclePartArmor_WindowRearLeft = "Armure de vitre arrière gauche",
+    IGUI_VehiclePartArmor_WindowRearRight = "Armure de vitre arrière droite",
+    IGUI_VehiclePartArmor_DoorFrontLeft = "Armure de porte avant gauche",
+    IGUI_VehiclePartArmor_DoorFrontRight = "Armure de porte avant droite",
+    IGUI_VehiclePartArmor_DoorRearLeft = "Armure de porte arrière gauche",
+    IGUI_VehiclePartArmor_DoorRearRight = "Armure de porte arrière droite",
+    IGUI_VehiclePartArmor_WheelFrontLeft = "Armure de roue avant gauche",
+    IGUI_VehiclePartArmor_WheelFrontRight = "Armure de roue avant droite",
+    IGUI_VehiclePartArmor_WheelRearLeft = "Armure de roue arrière gauche",
+    IGUI_VehiclePartArmor_WheelRearRight = "Armure de roue arrière droite",
+    IGUI_VehiclePartRoofRack = "Galerie de toit",
+
+    IGUI_pzVehicleWorkshop_AnimOpen_flipLamps = "Lampes à clapet ouvertes",
+    IGUI_pzVehicleWorkshop_AnimClose_flipLamps = "Fermer les lampes rabattables",
+    IGUI_pzVehicleWorkshop_AnimOpen_convertible = "Toit Ouvert",
+    IGUI_pzVehicleWorkshop_AnimClose_convertible = "Fermer le toit",
+    
+}

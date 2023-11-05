@@ -1,0 +1,28 @@
+IGUI_CN = {
+
+    IGUI_VehiclePartArmor_BumperFront = "保险杠装甲",
+    IGUI_VehiclePartArmor_BumperRear = "后保险杠装甲",
+    IGUI_VehiclePartArmor_EngineDoor = "兜帽装甲",
+    IGUI_VehiclePartArmor_TrunkDoor = "行李箱盖装甲",
+    IGUI_VehiclePartArmor_Windshield = "挡风玻璃装甲",
+    IGUI_VehiclePartArmor_WindshieldRear = "后挡风玻璃装甲",
+    IGUI_VehiclePartArmor_WindowFrontLeft = "左前窗装甲",
+    IGUI_VehiclePartArmor_WindowFrontRight = "右前窗装甲",
+    IGUI_VehiclePartArmor_WindowRearLeft = "左后窗装甲",
+    IGUI_VehiclePartArmor_WindowRearRight = "右后窗​​装甲",
+    IGUI_VehiclePartArmor_DoorFrontLeft = "左前门装甲",
+    IGUI_VehiclePartArmor_DoorFrontRight = "右前门装甲",
+    IGUI_VehiclePartArmor_DoorRearLeft = "左后门装甲",
+    IGUI_VehiclePartArmor_DoorRearRight = "右后门装甲",
+    IGUI_VehiclePartArmor_WheelFrontLeft = "左前轮装甲",
+    IGUI_VehiclePartArmor_WheelFrontRight = "右前轮装甲",
+    IGUI_VehiclePartArmor_WheelRearLeft = "左后轮装甲",
+    IGUI_VehiclePartArmor_WheelRearRight = "右后轮装甲",
+    IGUI_VehiclePartRoofRack = "车顶行李架",
+
+    IGUI_pzVehicleWorkshop_AnimOpen_flipLamps = "打开翻转灯",
+    IGUI_pzVehicleWorkshop_AnimClose_flipLamps = "关闭翻转灯",
+    IGUI_pzVehicleWorkshop_AnimOpen_convertible = "开放式屋顶",
+    IGUI_pzVehicleWorkshop_AnimClose_convertible = "关闭屋顶",
+    
+}

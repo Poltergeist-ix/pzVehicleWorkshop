@@ -1,0 +1,4 @@
+Tooltip_CN = {
+	Tooltip_Recipe_Known = "配方已知",
+	Tooltip_Recipe_NotKnown = "配方未知",
+}

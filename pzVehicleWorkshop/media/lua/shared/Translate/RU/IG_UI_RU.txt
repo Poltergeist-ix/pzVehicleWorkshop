@@ -1,0 +1,28 @@
+IGUI_RU = {
+
+    IGUI_VehiclePartArmor_BumperFront = "Броня бампера",
+    IGUI_VehiclePartArmor_BumperRear = "Броня заднего бампера",
+    IGUI_VehiclePartArmor_EngineDoor = "Броня капота",
+    IGUI_VehiclePartArmor_TrunkDoor = "Броня багажника",
+    IGUI_VehiclePartArmor_Windshield = "Броня лобового стекла",
+    IGUI_VehiclePartArmor_WindshieldRear = "Броня заднего стекла",
+    IGUI_VehiclePartArmor_WindowFrontLeft = "Броня переднего левого окна",
+    IGUI_VehiclePartArmor_WindowFrontRight = "Броня переднего правого окна",
+    IGUI_VehiclePartArmor_WindowRearLeft = "Броня заднего левого окна",
+    IGUI_VehiclePartArmor_WindowRearRight = "Броня заднего правого окна",
+    IGUI_VehiclePartArmor_DoorFrontLeft = "Броня передней левой двери",
+    IGUI_VehiclePartArmor_DoorFrontRight = "Броня передней правой двери",
+    IGUI_VehiclePartArmor_DoorRearLeft = "Броня задней левой двери",
+    IGUI_VehiclePartArmor_DoorRearRight = "Броня задней правой двери",
+    IGUI_VehiclePartArmor_WheelFrontLeft = "Броня переднего левого колеса",
+    IGUI_VehiclePartArmor_WheelFrontRight = "Броня переднего правого колеса",
+    IGUI_VehiclePartArmor_WheelRearLeft = "Броня заднего левого колеса",
+    IGUI_VehiclePartArmor_WheelRearRight = "Броня заднего правого колеса",
+    IGUI_VehiclePartRoofRack = "Багажник на крыше",
+
+    IGUI_pzVehicleWorkshop_AnimOpen_flipLamps = "Открыть раскладные лампы",
+    IGUI_pzVehicleWorkshop_AnimClose_flipLamps = "Закрыть откидные лампы",
+    IGUI_pzVehicleWorkshop_AnimOpen_convertible = "Открыть крышу",
+    IGUI_pzVehicleWorkshop_AnimClose_convertible = "Закрыть крышу",
+    
+}

@@ -1,0 +1,28 @@
+IGUI_PT = {
+
+    IGUI_VehiclePartArmor_BumperFront = "Armadura Pára-choques",
+    IGUI_VehiclePartArmor_BumperRear = "Armadura do pára-choque traseiro",
+    IGUI_VehiclePartArmor_EngineDoor = "Armadura de Capuz",
+    IGUI_VehiclePartArmor_TrunkDoor = "Armadura da tampa do porta-malas",
+    IGUI_VehiclePartArmor_Windshield = "Armadura de pára-brisa",
+    IGUI_VehiclePartArmor_WindshieldRear = "Armadura do pára-brisa traseiro",
+    IGUI_VehiclePartArmor_WindowFrontLeft = "Armadura da janela frontal esquerda",
+    IGUI_VehiclePartArmor_WindowFrontRight = "Armadura da janela frontal direita",
+    IGUI_VehiclePartArmor_WindowRearLeft = "Armadura da janela traseira esquerda",
+    IGUI_VehiclePartArmor_WindowRearRight = "Armadura da janela traseira direita",
+    IGUI_VehiclePartArmor_DoorFrontLeft = "Armadura da porta dianteira esquerda",
+    IGUI_VehiclePartArmor_DoorFrontRight = "Armadura da porta dianteira direita",
+    IGUI_VehiclePartArmor_DoorRearLeft = "Armadura da porta traseira esquerda",
+    IGUI_VehiclePartArmor_DoorRearRight = "Armadura da porta traseira direita",
+    IGUI_VehiclePartArmor_WheelFrontLeft = "Armadura da roda dianteira esquerda",
+    IGUI_VehiclePartArmor_WheelFrontRight = "Armadura da roda dianteira direita",
+    IGUI_VehiclePartArmor_WheelRearLeft = "Armadura da roda traseira esquerda",
+    IGUI_VehiclePartArmor_WheelRearRight = "Armadura da roda traseira direita",
+    IGUI_VehiclePartRoofRack = "Rack de teto",
+
+    IGUI_pzVehicleWorkshop_AnimOpen_flipLamps = "Lâmpadas flip abertas",
+    IGUI_pzVehicleWorkshop_AnimClose_flipLamps = "Fechar lâmpadas flip",
+    IGUI_pzVehicleWorkshop_AnimOpen_convertible = "Telhado aberto",
+    IGUI_pzVehicleWorkshop_AnimClose_convertible = "Fechar telhado",
+    
+}

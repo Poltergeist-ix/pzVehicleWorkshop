@@ -1,5 +1,13 @@
 # Snippets
 
+## general
+
+Even though it's mostly unused, vehicles also have modData. BaseVehicle class inherits it from IsoObject, it is persistent.
+
+```lua
+local data = vehicle:getModData()
+```
+
 ## scripts
 
 To change a vehicle script we can use `VehicleScript:Load(name,block)`, first argument is the name of the vehicle, second is the vehicle script block you want to load in addition to what has been loaded already.
@@ -25,9 +33,9 @@ VehicleUtils.callLua(functionName, arg1, arg2, arg3, arg4)
 # Distributions
 
 VehicleZoneDistribution:
->  spawnChance is used to define the odds of spawning this car or another (the total for a zone should always be 100)
-
-However that is fixed later in java and new spawnChances are printed.
+> spawnChance is used to define the odds of spawning this car or another (the total for a zone should always be 100)
+> 
+> However that is fixed later in java and adjusted spawnChances are printed.
 
 # MP Sync
 Most Vehicle changes should be done on the server.

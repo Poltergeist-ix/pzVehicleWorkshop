@@ -15,6 +15,7 @@ offset = 0 1.2 0.4321,
 
 The `*` wildcard can be used for part and passenger blocks to target previously loaded blocks. It can be used by itself `part * {}`, in the start `part *Left {}` or the end `part Door* {}`. 
 It supports more advanced matching as well. When an id contains `*`, all previously added parts are checked for a match to a pattern.
+The Vehicle script does not save new variables into modData, unlike Item script.
 
 # Part Script
 
@@ -34,6 +35,7 @@ It supports more advanced matching as well. When an id contains `*`, all previou
 | wheel | String | vehicle wheel |
 
 > specificItem: when true: the item type is item type + mechanicType of vehicle  
+> category: nodisplay is not shows in mechanics UI, door and bodywork parts can be selected as targets of attacks.
 
 ## anim block
 
